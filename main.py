@@ -106,7 +106,14 @@ while running:
                             # Convert screen position to map position
                             map_click_pos = [(mouse_position[0] - map_position[0]) / zoom_level, 
                                             (mouse_position[1] - map_position[1]) / zoom_level]
-                            buildings.append(Building(map_click_pos))      
+                            buildings.append(Building(map_click_pos))                        
+        # Zoom controls
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_PLUS or event.key == pygame.K_EQUALS:
+                zoom_level += 0.1
+            elif event.key == pygame.K_MINUS:
+                zoom_level = max(0.1, zoom_level - 0.1)
+
 
 
 
