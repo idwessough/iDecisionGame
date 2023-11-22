@@ -114,12 +114,31 @@ while running:
             elif event.key == pygame.K_MINUS:
                 zoom_level = max(0.1, zoom_level - 0.1)
 
+    # Movement controls
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        map_position[0] += 5
+    if keys[pygame.K_RIGHT]:
+        map_position[0] -= 5
+    if keys[pygame.K_UP]:
+        map_position[1] += 5
+    if keys[pygame.K_DOWN]:
+        map_position[1] -= 5
 
 
 
     # Clear screen
     screen.fill((0, 0, 0))
 
+    # Draw the scaled map
+    scaled_map = pygame.transform.scale(map_image, 
+                    (int(map_rect.width * zoom_level), 
+                     int(map_rect.height * zoom_level)))
+    screen.blit(scaled_map, map_position)
+    
+    # Draw buildings
+    for building in buildings:
+        building.draw(screen, map_position, zoom_level)
 
     # Draw build icon
     screen.blit(build_icon, (0, HEIGHT - 50))
