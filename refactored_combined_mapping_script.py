@@ -43,67 +43,151 @@ except Exception as e:
 running = True
 clock = pygame.time.Clock()
 
+import pygame
+import os
 
-# Camera properties
-camera_x, camera_y = 0, 0
-zoom_level = 1.0
-# Default Speeds camera movement
-camera_speed = 1
-# Default Speeds of zooming
-zoom_speed = 1.001
+#import main
+
+# Initialize Pygame
+pygame.init()
+
+# Screen dimensions
+WIDTH, HEIGHT = 800, 600
+MENU_HEIGHT = 100
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+developer_option = False
+
+# Build icon and menu variables
+build_icon = pygame.Surface((50, 50))  # Placeholder for an icon
+build_icon.fill((255, 0, 0))  # Red square as a placeholder
+build_menu_visible = False
+build_menu_rect = pygame.Rect(0, HEIGHT - MENU_HEIGHT, WIDTH, MENU_HEIGHT)
+visibility_changes = False
+
+ASSETS_PATH = os.path.join("assets")
+MAPPING_PATH = os.path.join(ASSETS_PATH, "mapping")
+MENU_PATH = os.path.join(ASSETS_PATH, "home_menu")
+BUILDING_PATH = os.path.join(ASSETS_PATH, "buildings")
+SCIENCE_PATH = os.path.join(ASSETS_PATH, "science")
+# Placeholder for building types
+building_types = ["House", "Factory", "School", "Steel_Mill", "Town_Hall"]  # Add more as needed
+selected_building = None
+# Building images 
+house_image = pygame.image.load(os.path.join(BUILDING_PATH, "house"))
+factory_image =  pygame.image.load(os.path.join(BUILDING_PATH, "factory"))
+school_image =  pygame.image.load(os.path.join(BUILDING_PATH, "school"))
+steel_mill_image = pygame.image.load(os.path.join(BUILDING_PATH, "steel_mill"))
+town_hall_image = pygame.image.load(os.path.join(BUILDING_PATH, "town_hall"))
+
+map_path = os.path.join(MAPPING_PATH, "q_mapping.png")
+print(map_path)
+
+# Load the map
+map_image = pygame.image.load(map_path)
+map_rect = map_image.get_rect()
+map_position = [0, 0]  # Initial position
+zoom_level = 1.0  # Initial zoom level
+
+# Class for Buildings
+class Building: 
+    def __init__(self, map_pos):
+        self.building_path = os.path.join("assets", "mapping", "east_coast.png") 
+        self.original_image = pygame.image.load(self.building_path)
+        self.original_pos = map_pos  # Position relative to the map
+
+    def draw(self, surface, map_pos, zoom):
+        # Scale building size
+        scaled_image = pygame.transform.scale(self.original_image, 
+                        (int(self.original_image.get_width() * zoom), 
+                         int(self.original_image.get_height() * zoom)))
+
+        # Calculate current position on the screen
+        screen_pos = [self.original_pos[0] * zoom + map_pos[0], 
+                      self.original_pos[1] * zoom + map_pos[1]]
+
+        surface.blit(scaled_image, screen_pos)
+
+# List to store buildings
+buildings = []
 
 # Main game loop
 running = True
 while running:
     for event in pygame.event.get():
+        
+        # Display all events in case it is needed (developer option)
+        if developer_option:
+            if event:
+                print(event)
+
+        # Handle quitting event by user    
         if event.type == pygame.QUIT:
             running = False
-    keys = pygame.key.get_pressed()
-    # Default Speeds camera movement
-    camera_speed = 1
-    # Default Speeds of zooming
-    zoom_speed = 1.001
-    if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]: 
-        camera_speed = 7 
-        zoom_speed = 1.01   
-    if keys[pygame.K_LEFT]:
-        camera_x -= camera_speed 
-    if keys[pygame.K_RIGHT]:
-        camera_x += camera_speed
-    if keys[pygame.K_UP]:
-        camera_y -= camera_speed 
-    if keys[pygame.K_DOWN]:
-        camera_y += camera_speed 
-    if keys[pygame.K_a]:  # Zoom out
-        zoom_level /= zoom_speed 
-    if keys[pygame.K_s]:  # Zoom in
-        zoom_level *= zoom_speed
+    #building_menu = Button
+        # Mouse click 
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            # Check if the mouse is down and store this state
+            if event.button == 1:  # Left click
+                mouse_down = True
+            # Mouse position when clicking down 
+            mouse_position = event.pos    
 
-    # Clear the screen
+
+            # Click on build icon
+            if build_icon.get_rect(topleft=(0, HEIGHT - 50)).collidepoint(mouse_position):
+                build_menu_visible = not build_menu_visible 
+                if visibility_changes:
+                    print(build_menu_visible)
+                    # Selecting a building from the menu
+                    if build_menu_visible and build_menu_rect.collidepoint(mouse_position):
+                        # Determine which building is selected based on mouse position
+                        # For now, let's say each building icon is 50x50 and they're laid out horizontally
+                        index = (mouse_position[0] // 50) % len(building_types)
+                        selected_building = building_types[index]
+                        print(index, selected_building)
+                        # build_menu_visible = False
+                        if selected_building:
+                            print(selected_building)
+                            # Convert screen position to map position
+                            map_click_pos = [(mouse_position[0] - map_position[0]) / zoom_level, 
+                                            (mouse_position[1] - map_position[1]) / zoom_level]
+                            buildings.append(Building(map_click_pos))                        
+        # Zoom controls
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_PLUS or event.key == pygame.K_EQUALS:
+                zoom_level += 0.1
+            elif event.key == pygame.K_MINUS:
+                zoom_level = max(0.1, zoom_level - 0.1)
+
+    # Movement controls
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        map_position[0] += 5
+    if keys[pygame.K_RIGHT]:
+        map_position[0] -= 5
+    if keys[pygame.K_UP]:
+        map_position[1] += 5
+    if keys[pygame.K_DOWN]:
+        map_position[1] -= 5
+
+
+
+    # Clear screen
     screen.fill((0, 0, 0))
 
+    # Draw the scaled map
+    scaled_map = pygame.transform.scale(map_image, 
+                    (int(map_rect.width * zoom_level), 
+                     int(map_rect.height * zoom_level)))
+    screen.blit(scaled_map, map_position)
     
-    # Draw the map with camera and zooming
-    for row_index, row in enumerate(tile_map):
-        for col_index, tile in enumerate(row):
-            tile_x = (col_index * TILE_SIZE - camera_x) * zoom_level
-            tile_y = (row_index * TILE_SIZE - camera_y) * zoom_level
-            zoomed_tile_size = TILE_SIZE * zoom_level
-            if tile == 0:
-                # Draw grass
-                screen.blit(pygame.transform.scale(grass_image, (int(zoomed_tile_size), int(zoomed_tile_size))), (tile_x, tile_y))
-            elif tile == 1:
-                # Draw water
-                screen.blit(pygame.transform.scale(water_image, (int(zoomed_tile_size), int(zoomed_tile_size))), (tile_x, tile_y))
-            # Add more tile types as needed
+    # Draw buildings
+    for building in buildings:
+        building.draw(screen, map_position, zoom_level)
 
 
     # Update the display
     pygame.display.flip()
 
-    # Cap the frame rate
-    clock.tick(FPS)
-
 # Quit Pygame
 pygame.quit()
-sys.exit()
