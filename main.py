@@ -188,7 +188,22 @@ while running:
                 icon_top_bound = row * (ICON_SIZE + ICON_PADDING + TEXT_HEIGHT) + ICON_PADDING
                 icon_right_bound = icon_left_bound + ICON_SIZE
                 icon_bottom_bound = icon_top_bound + ICON_SIZE
- 
+
+                if icon_left_bound <= relative_x <= icon_right_bound and \
+                   icon_top_bound <= relative_y <= icon_bottom_bound:
+                    # Calculate the index of the selected building
+                    index = row * icons_per_row + col
+                    if 0 <= index < len(building_types):
+                        selected_building_type, building_path = list(building_types.items())[index]
+                        if resources >= 50:  # Placeholder resource check
+                            resources -= 50  # Deduct resources
+                            selected_building = (selected_building_type, building_path)
+                            building_selected = True  # Indicate that a building has been selected
+                            build_menu_visible = False  # Optionally hide the menu after selection
+                        else:
+                            print("Not enough resources to build that one")
+                            selected_building = None
+                            building_selected = False
 
             # Place building after selection
             elif building_selected:
@@ -260,7 +275,11 @@ while running:
 
     # Draw build icon at its new position
     screen.blit(build_icon, build_icon_rect.topleft)
-     
+    
+    # Blit the surfaces onto the main screen
+    screen.blit(trapezoid_surface, (0,0))
+    screen.blit(rectangle_surface, (0,0))
+ 
     # Draw buildings
     for building in buildings:
         building.draw(screen, map_position, zoom_level) 
