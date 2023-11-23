@@ -130,6 +130,27 @@ def scale_icon(image, type):
     return scaled_icon
 
 
+# Define two separate dictionaries for left and right side resources 
+left_side_resources = {
+    "gold": resource_amounts["gold"],
+    "wood": resource_amounts["wood"],
+    "stone": resource_amounts["stone"],
+    "food": resource_amounts["food"],
+    "water": resource_amounts["water"]
+    # ... other resources to display on the left .. 
+}
+
+right_side_resources = {
+    "steel": resource_amounts["steel"],
+    "bloom": resource_amounts["bloom"],
+    "chromium_bars": resource_amounts["chromium_bars"],
+    "wirerod": resource_amounts["wirerod"],
+    "laminated_stainless_steel_alloy": resource_amounts["laminated_stainless_steel_alloy"]
+    # ... other resources to display on the right .. 
+}
+
+# Define the font for the resource amounts display
+resource_font = pygame.font.SysFont(None, 24)
 
 
 # Function to draw the resources on the screen
