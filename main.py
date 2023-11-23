@@ -130,6 +130,36 @@ def scale_icon(image, type):
     return scaled_icon
 
 
+# Assuming you have loaded the resource icons somewhere in your code
+resource_icons = {
+    "gold": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "gold.png")).convert_alpha(), "resources_inventory"),
+    "wood": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "wood.png")).convert_alpha(), "resources_inventory"),
+    "stone": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "stone.png")).convert_alpha(), "resources_inventory"),
+    "food": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "food.png")).convert_alpha(), "resources_inventory"),
+    "water": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "water.png")).convert_alpha(), "resources_inventory"),
+    "steel": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "steel.png")).convert_alpha(), "resources_inventory"),
+    "bloom": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "bloom.png")).convert_alpha(), "resources_inventory"),
+    "chromium_bars": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "chromium_bars.png")).convert_alpha(), "resources_inventory"),
+    "wirerod": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "wirerod.png")).convert_alpha(), "resources_inventory"),
+    "laminated_stainless_steel_alloy": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "laminated_stainless_steel_alloy.png")).convert_alpha(), "resources_inventory")
+    # ... add more resources as needed
+}
+
+# Define the starting amounts for resources, this should be dynamic in playing actual game
+resource_amounts = {
+    "gold": 2000000,
+    "wood": 200000000,
+    "stone": 42000,
+    "food": 10000,
+    "water": 10000,
+    "steel": 1000,
+    "bloom": 700,
+    "chromium_bars": 500,
+    "wirerod": 250,
+    "laminated_stainless_steel_alloy": 42
+    # ... add more resources as needed
+}
+
 # Define two separate dictionaries for left and right side resources 
 left_side_resources = {
     "gold": resource_amounts["gold"],
