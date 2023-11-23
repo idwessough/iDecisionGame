@@ -1,6 +1,19 @@
 import pygame
 import os
- 
+import ctypes
+import pandas as pd
+
+# Function to set DPI Awareness 
+def set_dpi_awareness():
+    try:
+        # Try to use the most recent DPI awareness function
+        ctypes.windll.shcore.SetProcessDpiAwareness(2) # 2 = Per Monitor DPI Aware
+    except AttributeError:
+        # If the above function is not available, use the older one
+        ctypes.windll.user32.SetProcessDPIAware()
+
+# DPI Awareness in order to avoid Windows scaling (e.g. "150% recommanded") to break resolution renderer
+set_dpi_awareness()
 
 # Initialize Pygame
 pygame.init()
@@ -9,7 +22,9 @@ pygame.init()
 WIDTH, HEIGHT = 1920, 1080
 MENU_HEIGHT = 742
 ICON_SIZE = 142  # Assuming square icons for simplicity
-ICON_PADDING = 17 
+ICON_PADDING = 17
+RESOURCE_SIZE = 100
+RESOURCE_PADDING = 242
 TEXT_HEIGHT = 20
 BUILD_MENU_ROWS = 2  # Number of rows in build menu
 
@@ -28,6 +43,24 @@ MAPPING_PATH = os.path.join(ASSETS_PATH, "mapping")
 MENU_PATH = os.path.join(ASSETS_PATH, "home_menu")
 BUILDING_PATH = os.path.join(ASSETS_PATH, "buildings", graphics_level)
 ICON_PATH = os.path.join(ASSETS_PATH, "icons")
+SCIENCE_PATH = os.path.join(ASSETS_PATH, "science")
+RESOURCES_PATH = os.path.join(ASSETS_PATH, "resources")
+
+# Define the color for the shapes (brown with alpha)
+shape_color = (139, 69, 19, 177)  # 128 is the alpha value for semi-transparency
+
+# Create surfaces for the trapezoid and rectangle with per-pixel alpha
+trapezoid_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+rectangle_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+
+# Define the points for trapezoids shape
+upper_trapezoid_points_left = [(0, 0), ((WIDTH / 2) - 77, 0), ((WIDTH / 2) - 242, 77), (0, 77)]  # Replace with your actual points
+# Layout resources
+upper_trapezoid_points_right = [(WIDTH, 0), ((WIDTH / 2) + 77, 0), ((WIDTH / 2) + 242, 77), (WIDTH, 77)] 
+
+# Draw the shapes on their respective surfaces
+pygame.draw.polygon(trapezoid_surface, shape_color, upper_trapezoid_points_left)
+pygame.draw.polygon(rectangle_surface, shape_color, upper_trapezoid_points_right)
 
 # Build icon and menu variables
 build_icon = pygame.image.load(os.path.join(ICON_PATH, "build_menu.png")).convert_alpha()  # Placeholder for an icon 
@@ -47,7 +80,7 @@ building_types = {
     "School": os.path.join(BUILDING_PATH, "school.png"),
     "Steel_Mill": os.path.join(BUILDING_PATH, "steel_mill.png"),
     "Town_Hall": os.path.join(BUILDING_PATH, "town_hall.png"),
-    "1": os.path.join(BUILDING_PATH, "factory_future.png"),
+    "1": os.path.join(BUILDING_PATH, "factory.png"),
     "2": os.path.join(BUILDING_PATH, "factory.png"),
     "3": os.path.join(BUILDING_PATH, "school.png"),
     "4": os.path.join(BUILDING_PATH, "steel_mill.png"),
@@ -95,7 +128,7 @@ def scale_icon(image, type):
     if type == "resources_inventory":
         scaled_icon = pygame.transform.scale(image, (77, 77))
     return scaled_icon
- 
+
 
 selected_building = None
 resources = 10000  # Placeholder for player's resources
@@ -279,7 +312,8 @@ while running:
     # Blit the surfaces onto the main screen
     screen.blit(trapezoid_surface, (0,0))
     screen.blit(rectangle_surface, (0,0))
- 
+
+
     # Draw buildings
     for building in buildings:
         building.draw(screen, map_position, zoom_level) 
