@@ -1,6 +1,19 @@
 import pygame
 import os
- 
+import ctypes
+import pandas as pd
+
+# Function to set DPI Awareness 
+def set_dpi_awareness():
+    try:
+        # Try to use the most recent DPI awareness function
+        ctypes.windll.shcore.SetProcessDpiAwareness(2) # 2 = Per Monitor DPI Aware
+    except AttributeError:
+        # If the above function is not available, use the older one
+        ctypes.windll.user32.SetProcessDPIAware()
+
+# DPI Awareness in order to avoid Windows scaling (e.g. "150% recommanded") to break resolution renderer
+set_dpi_awareness()
 
 # Initialize Pygame
 pygame.init()
