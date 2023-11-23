@@ -57,7 +57,13 @@ class Button:
         self.bottom_color = '#354B5E'
         # Original method for button drawing
         self.draw()
+
  
+
+# Define the action for the exit button
+def quit_game():
+    pygame.quit()
+    sys.exit()
 
 # Main menu loop
 def main_menu():
