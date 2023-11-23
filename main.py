@@ -130,6 +130,29 @@ def scale_icon(image, type):
     return scaled_icon
 
 
+
+
+# Function to draw the resources on the screen
+def draw_resources(surface, resources, amounts, font, start_x, start_y, direction, icon_size=42):
+    x, y = start_x, start_y
+    # Text need to appear in the middle of y axes width of the resource icon
+    y_text = icon_size / 2
+    padding = 7
+    
+    for resource, amount in amounts.items():
+        # Draw the icon
+        icon = resources[resource]
+        surface.blit(icon, (x, y))
+
+        # Draw the amount text
+        text_surf = font.render(f"{amount}", True, (255, 255, 255))
+        text_x = x + icon_size if direction == 'right' else x - text_surf.get_width() 
+        surface.blit(text_surf, (text_x, y_text))
+
+        # Update x to the next position
+        x = x + icon_size + text_surf.get_width() + padding * 2 if direction == 'right' else x - (icon_size + text_surf.get_width() + padding * 2)
+
+
 selected_building = None
 resources = 10000  # Placeholder for player's resources
 
@@ -312,8 +335,17 @@ while running:
     # Blit the surfaces onto the main screen
     screen.blit(trapezoid_surface, (0,0))
     screen.blit(rectangle_surface, (0,0))
-
-
+    
+    # Draw left side resources
+    draw_resources(screen, resource_icons, left_side_resources, resource_font, 10, 10, "right", 77)
+    
+    # Draw right side resources
+    right_start_x = WIDTH - 10  # Start from the right edge of the screen
+    #for amount in right_side_resources.values():
+    #    right_start_x -= (resource_font.size(str(amount))[0] + ICON_SIZE + RESOURCE_PADDING * 2)  # Adjust starting X position based on the width of the resources
+    
+    draw_resources(screen, resource_icons, right_side_resources, resource_font, right_start_x, 10, "left", 77)
+    
     # Draw buildings
     for building in buildings:
         building.draw(screen, map_position, zoom_level) 
