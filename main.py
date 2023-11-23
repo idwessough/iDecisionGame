@@ -1,67 +1,157 @@
 import pygame
 import os
-
-#import main
+ 
 
 # Initialize Pygame
 pygame.init()
 
 # Screen dimensions
-WIDTH, HEIGHT = 800, 600
-MENU_HEIGHT = 100
+WIDTH, HEIGHT = 1920, 1080
+MENU_HEIGHT = 742
+ICON_SIZE = 142  # Assuming square icons for simplicity
+ICON_PADDING = 17 
+TEXT_HEIGHT = 20
+BUILD_MENU_ROWS = 2  # Number of rows in build menu
+
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+clock = pygame.time.Clock()
+maximum_fps = 60
 developer_option = False
+building_selected = False  # Flag to indicate if a building is selected
 
-# Build icon and menu variables
-build_icon = pygame.Surface((50, 50))  # Placeholder for an icon
-build_icon.fill((255, 0, 0))  # Red square as a placeholder
-build_menu_visible = False
-build_menu_rect = pygame.Rect(0, HEIGHT - MENU_HEIGHT, WIDTH, MENU_HEIGHT)
-visibility_changes = False
+graphics_levels = ["low", "medium", "high", "ultra", "extra"]
+graphics_level = graphics_levels[0]
 
-ASSETS_PATH = os.path.join("assets")
+# Paths of differents Assets
+ASSETS_PATH = os.path.join("assets") 
 MAPPING_PATH = os.path.join(ASSETS_PATH, "mapping")
 MENU_PATH = os.path.join(ASSETS_PATH, "home_menu")
-BUILDING_PATH = os.path.join(ASSETS_PATH, "buildings")
-SCIENCE_PATH = os.path.join(ASSETS_PATH, "science")
-# Placeholder for building types
-building_types = ["House", "Factory", "School", "Steel_Mill", "Town_Hall"]  # Add more as needed
-selected_building = None
-# Building images 
-house_image = pygame.image.load(os.path.join(BUILDING_PATH, "house"))
-factory_image =  pygame.image.load(os.path.join(BUILDING_PATH, "factory"))
-school_image =  pygame.image.load(os.path.join(BUILDING_PATH, "school"))
-steel_mill_image = pygame.image.load(os.path.join(BUILDING_PATH, "steel_mill"))
-town_hall_image = pygame.image.load(os.path.join(BUILDING_PATH, "town_hall"))
+BUILDING_PATH = os.path.join(ASSETS_PATH, "buildings", graphics_level)
+ICON_PATH = os.path.join(ASSETS_PATH, "icons")
 
-map_path = os.path.join(MAPPING_PATH, "q_mapping.png")
-print(map_path)
+# Build icon and menu variables
+build_icon = pygame.image.load(os.path.join(ICON_PATH, "build_menu.png")).convert_alpha()  # Placeholder for an icon 
+# Position the build icon at the top center of the screen
+build_icon_rect = build_icon.get_rect()
+build_icon_rect.centerx = WIDTH // 2
+build_icon_rect.y = 10  # Small margin from the top
+build_menu_visible = False
+build_menu_rect = pygame.Rect(0, HEIGHT - MENU_HEIGHT, WIDTH, MENU_HEIGHT)
+# Calculate the number of icons per row based on the width of the build menu and the size of the icons plus padding
+icons_per_row = build_menu_rect.width // (ICON_SIZE + ICON_PADDING)
+
+# Paths for the differents building types images
+building_types = {
+    "House": os.path.join(BUILDING_PATH, "house.png"),
+    "Factory": os.path.join(BUILDING_PATH, "factory.png"),
+    "School": os.path.join(BUILDING_PATH, "school.png"),
+    "Steel_Mill": os.path.join(BUILDING_PATH, "steel_mill.png"),
+    "Town_Hall": os.path.join(BUILDING_PATH, "town_hall.png"),
+    "1": os.path.join(BUILDING_PATH, "factory_future.png"),
+    "2": os.path.join(BUILDING_PATH, "factory.png"),
+    "3": os.path.join(BUILDING_PATH, "school.png"),
+    "4": os.path.join(BUILDING_PATH, "steel_mill.png"),
+    "5": os.path.join(BUILDING_PATH, "town_hall.png"),
+    "6": os.path.join(BUILDING_PATH, "house.png"),
+    "7": os.path.join(BUILDING_PATH, "factory.png"),
+    "8": os.path.join(BUILDING_PATH, "school.png"),
+    "9": os.path.join(BUILDING_PATH, "steel_mill.png"),
+    "10": os.path.join(BUILDING_PATH, "town_hall.png"),
+    "11": os.path.join(BUILDING_PATH, "house.png"),
+    "12": os.path.join(BUILDING_PATH, "factory.png"),
+    "13": os.path.join(BUILDING_PATH, "school.png"),
+    "14": os.path.join(BUILDING_PATH, "steel_mill.png"),
+    "15": os.path.join(BUILDING_PATH, "town_hall.png"),
+    "16": os.path.join(BUILDING_PATH, "house.png"),
+    "17": os.path.join(BUILDING_PATH, "factory.png"),
+    "18": os.path.join(BUILDING_PATH, "school.png"),
+    "19": os.path.join(BUILDING_PATH, "steel_mill.png"),
+    "21": os.path.join(BUILDING_PATH, "town_hall.png"),
+    "22": os.path.join(BUILDING_PATH, "house.png"),
+    "23": os.path.join(BUILDING_PATH, "factory.png"),
+    "24": os.path.join(BUILDING_PATH, "school.png"),
+    "25": os.path.join(BUILDING_PATH, "steel_mill.png"),
+    "26": os.path.join(BUILDING_PATH, "town_hall.png"),
+    "27": os.path.join(BUILDING_PATH, "house.png"),
+    "28": os.path.join(BUILDING_PATH, "factory.png"),
+    "29": os.path.join(BUILDING_PATH, "school.png"),
+    "30": os.path.join(BUILDING_PATH, "steel_mill.png"),
+    "31": os.path.join(BUILDING_PATH, "town_hall.png"),
+    "32": os.path.join(BUILDING_PATH, "house.png"),
+    "33": os.path.join(BUILDING_PATH, "factory.png"),
+    "34": os.path.join(BUILDING_PATH, "school.png"),
+    "35": os.path.join(BUILDING_PATH, "steel_mill.png"),
+    "36": os.path.join(BUILDING_PATH, "town_hall.png"),
+    "37": os.path.join(BUILDING_PATH, "house.png"),
+    "38": os.path.join(BUILDING_PATH, "factory.png"),
+    "39": os.path.join(BUILDING_PATH, "school.png"),
+    "40": os.path.join(BUILDING_PATH, "steel_mill.png"),
+    "41": os.path.join(BUILDING_PATH, "town_hall.png"),
+    "42": os.path.join(BUILDING_PATH, "house.png")
+}
+
+# Scale images to desired sizes
+def scale_icon(image, type):
+    if type == "resources_inventory":
+        scaled_icon = pygame.transform.scale(image, (77, 77))
+    return scaled_icon
+ 
+
+selected_building = None
+resources = 10000  # Placeholder for player's resources
 
 # Load the map
-map_image = pygame.image.load(map_path)
+map_image = pygame.image.load(os.path.join(MAPPING_PATH, "q_mapping.png")).convert()
 map_rect = map_image.get_rect()
 map_position = [0, 0]  # Initial position
 zoom_level = 1.0  # Initial zoom level
 
+# Font for building names
+font = pygame.font.SysFont(None, 24)
+
+# Function to draw the build menu
+def draw_build_menu(surface, menu_rect, icons, font):
+    surface.fill((200, 200, 200), menu_rect)  # Draw the menu background
+
+    icons_per_row = menu_rect.width // (ICON_SIZE + ICON_PADDING)  # Icons per row
+    for i, (name, icon_path) in enumerate(icons.items()):
+        row = i // icons_per_row
+        col = i % icons_per_row
+        x = menu_rect.x + col * (ICON_SIZE + ICON_PADDING) + ICON_PADDING
+        y = menu_rect.y + row * (ICON_SIZE + TEXT_HEIGHT + ICON_PADDING) + ICON_PADDING
+
+        # Load and draw the icon
+        icon = pygame.image.load(icon_path).convert_alpha()
+        icon_rect = pygame.Rect(x, y, ICON_SIZE, ICON_SIZE)
+        pygame.draw.rect(surface, (0, 0, 0), icon_rect, 1)  # Draw border
+        surface.blit(icon, icon_rect)
+
+        # Draw the building name
+        text_surf = font.render(name, True, (0, 0, 0))
+        text_rect = text_surf.get_rect(center=(x + ICON_SIZE // 2, y + ICON_SIZE + TEXT_HEIGHT // 2))
+        surface.blit(text_surf, text_rect)
+
 # Class for Buildings
-class Building: 
-    def __init__(self, map_pos):
-        self.building_path = os.path.join("assets", "mapping", "east_coast.png") 
-        self.original_image = pygame.image.load(self.building_path)
-        self.original_pos = map_pos  # Position relative to the map
+class Building:
+    def __init__(self, image_path, map_pos):
+        self.original_image = pygame.image.load(image_path).convert_alpha()
+        self.original_pos = map_pos  # Center position relative to the map
+        self.width = self.original_image.get_width()
+        self.height = self.original_image.get_height()
 
     def draw(self, surface, map_pos, zoom):
-        # Scale building size
-        scaled_image = pygame.transform.scale(self.original_image, 
-                        (int(self.original_image.get_width() * zoom), 
-                         int(self.original_image.get_height() * zoom)))
+        # Scale building size and calculate the new width and height
+        scaled_image = pygame.transform.scale(self.original_image,
+                        (int(self.width * zoom), int(self.height * zoom)))
+        scaled_width = scaled_image.get_width()
+        scaled_height = scaled_image.get_height()
 
-        # Calculate current position on the screen
-        screen_pos = [self.original_pos[0] * zoom + map_pos[0], 
-                      self.original_pos[1] * zoom + map_pos[1]]
+        # Calculate current position on the screen with the center at the original position
+        screen_pos = [self.original_pos[0] * zoom + map_pos[0] - scaled_width // 2,
+                      self.original_pos[1] * zoom + map_pos[1] - scaled_height // 2]
 
         surface.blit(scaled_image, screen_pos)
-
+        
 # List to store buildings
 buildings = []
 
@@ -69,91 +159,138 @@ buildings = []
 running = True
 while running:
     for event in pygame.event.get():
-        
-        # Display all events in case it is needed (developer option)
-        if developer_option:
-            if event:
-                print(event)
+        if developer_option and event:
+            print(event)
 
-        # Handle quitting event by user    
         if event.type == pygame.QUIT:
             running = False
-    #building_menu = Button
-        # Mouse click 
+
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Check if the mouse is down and store this state
-            if event.button == 1:  # Left click
-                mouse_down = True
-            # Mouse position when clicking down 
-            mouse_position = event.pos    
+            mouse_position = event.pos
 
+            # Toggle build menu visibility
+            if build_icon_rect.collidepoint(event.pos) and not building_selected:
+                build_menu_visible = not build_menu_visible
+                continue  # Skip the rest of the loop to avoid other interactions
 
-            # Click on build icon
-            if build_icon.get_rect(topleft=(0, HEIGHT - 50)).collidepoint(mouse_position):
-                build_menu_visible = not build_menu_visible 
-                if visibility_changes:
-                    print(build_menu_visible)
-                    # Selecting a building from the menu
-                    if build_menu_visible and build_menu_rect.collidepoint(mouse_position):
-                        # Determine which building is selected based on mouse position
-                        # For now, let's say each building icon is 50x50 and they're laid out horizontally
-                        index = (mouse_position[0] // 50) % len(building_types)
-                        selected_building = building_types[index]
-                        print(index, selected_building)
-                        # build_menu_visible = False
-                        if selected_building:
-                            print(selected_building)
-                            # Convert screen position to map position
-                            map_click_pos = [(mouse_position[0] - map_position[0]) / zoom_level, 
-                                            (mouse_position[1] - map_position[1]) / zoom_level]
-                            buildings.append(Building(map_click_pos))                        
+            # Selecting a building from the menu
+            if build_menu_visible and build_menu_rect.collidepoint(mouse_position):
+                # Calculate the position relative to the build menu
+                relative_x = mouse_position[0] - build_menu_rect.x
+                relative_y = mouse_position[1] - build_menu_rect.y
+
+                # Calculate the row and column where the click occurred
+                col = relative_x // (ICON_SIZE + ICON_PADDING)
+                row = relative_y // (ICON_SIZE + ICON_PADDING + TEXT_HEIGHT)
+
+                # Check if the click was inside the bounds of an icon
+                icon_left_bound = col * (ICON_SIZE + ICON_PADDING) + ICON_PADDING
+                icon_top_bound = row * (ICON_SIZE + ICON_PADDING + TEXT_HEIGHT) + ICON_PADDING
+                icon_right_bound = icon_left_bound + ICON_SIZE
+                icon_bottom_bound = icon_top_bound + ICON_SIZE
+
+                if icon_left_bound <= relative_x <= icon_right_bound and \
+                   icon_top_bound <= relative_y <= icon_bottom_bound:
+                    # Calculate the index of the selected building
+                    index = row * icons_per_row + col
+                    if 0 <= index < len(building_types):
+                        selected_building_type, building_path = list(building_types.items())[index]
+                        if resources >= 50:  # Placeholder resource check
+                            resources -= 50  # Deduct resources
+                            selected_building = (selected_building_type, building_path)
+                            building_selected = True  # Indicate that a building has been selected
+                            build_menu_visible = False  # Optionally hide the menu after selection
+                        else:
+                            print("Not enough resources to build that one")
+                            selected_building = None
+                            building_selected = False
+
+            # Place building after selection
+            elif building_selected:
+                if pygame.mouse.get_pressed()[0]:  # Left mouse click
+                    mouse_position = pygame.mouse.get_pos()
+                    
+                    # Get the building type and image path
+                    building_type, building_path = selected_building
+                    
+                    # Create a temporary Building object to get the width and height
+                    temp_building = Building(building_path, (0, 0))
+                    
+                    # Calculate the center position to place the building
+                    # We adjust by half the width and height of the scaled building image
+                    center_x = (mouse_position[0] - map_position[0]) / zoom_level
+                    center_y = (mouse_position[1] - map_position[1]) / zoom_level
+                    map_click_pos = (
+                        center_x - (temp_building.width / 11) * zoom_level,
+                        center_y - (temp_building.height / 11) * zoom_level
+                    )
+                    
+                    # Add the new building to the list of buildings
+                    buildings.append(Building(building_path, map_click_pos))
+                    selected_building = None
+                    building_selected = False  # Reset the building selected flag
+
+        # Default Speeds camera movement
+        camera_speed = 5
+        # Default Speeds of zooming
+        zoom_speed = 0.01                   
+        # Maximum zoom
+        maximum_zoom = 1.7
+        # Minimum zoom
+        minimum_zoom = 0.2
+        keys = pygame.key.get_pressed()
+        
+        if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]: 
+            camera_speed = 7 
+
         # Zoom controls
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_PLUS or event.key == pygame.K_EQUALS:
-                zoom_level += 0.1
-            elif event.key == pygame.K_MINUS:
-                zoom_level = max(0.1, zoom_level - 0.1)
-
+        elif event.type == pygame.KEYDOWN:
+            if event.key in [pygame.K_PLUS, pygame.K_EQUALS]:
+                zoom_level += zoom_speed
+                print(zoom_level)
+        elif event.type == pygame.MOUSEWHEEL:
+            if event.y == 1 and zoom_level < maximum_zoom:
+                zoom_level += zoom_speed
+            elif event.y == -1 and zoom_level > minimum_zoom:
+                zoom_level -= zoom_speed
+                
     # Movement controls
-    keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
-        map_position[0] += 5
+        map_position[0] += camera_speed
     if keys[pygame.K_RIGHT]:
-        map_position[0] -= 5
+        map_position[0] -= camera_speed
     if keys[pygame.K_UP]:
-        map_position[1] += 5
+        map_position[1] += camera_speed
     if keys[pygame.K_DOWN]:
-        map_position[1] -= 5
-
-
+        map_position[1] -= camera_speed
 
     # Clear screen
     screen.fill((0, 0, 0))
 
     # Draw the scaled map
-    scaled_map = pygame.transform.scale(map_image, 
-                    (int(map_rect.width * zoom_level), 
+    scaled_map = pygame.transform.scale(map_image,
+                    (int(map_rect.width * zoom_level),
                      int(map_rect.height * zoom_level)))
     screen.blit(scaled_map, map_position)
+
+    # Draw build icon at its new position
+    screen.blit(build_icon, build_icon_rect.topleft)
     
+    # Blit the surfaces onto the main screen
+    screen.blit(trapezoid_surface, (0,0))
+    screen.blit(rectangle_surface, (0,0))
+ 
     # Draw buildings
     for building in buildings:
-        building.draw(screen, map_position, zoom_level)
+        building.draw(screen, map_position, zoom_level) 
 
-    # Draw build icon
-    screen.blit(build_icon, (0, HEIGHT - 50))
-    
     # Draw build menu if visible
     if build_menu_visible:
-        pygame.draw.rect(screen, (200, 200, 200), build_menu_rect)  # Draw menu background
-        # Draw building icons inside the menu
-        for i, building in enumerate(building_types):
-            color = (0, 255, 0) if True else (128, 128, 128)  # Check condition here
-            building_icon = pygame.Surface((50, 50))
-            building_icon.fill(color)
-            screen.blit(building_icon, (i * 50, HEIGHT - MENU_HEIGHT))
-
-
+        draw_build_menu(screen, build_menu_rect, building_types, font)
+    
+    clock.tick(maximum_fps)
+    #print(clock.get_fps())
+    
     # Update the display
     pygame.display.flip()
 
