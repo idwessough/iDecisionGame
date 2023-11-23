@@ -1,3 +1,5 @@
+# This script creates a Pygame window with a tile-based map that supports camera movement and zooming.
+
 import pygame
 
 import sys
