@@ -137,6 +137,59 @@ def quit_game():
 def open_link():
     webbrowser.open('http://github.com/idwessough/iDecisionGame') #Resource Harvest
 
+# Define the action for the settings button
+def open_settings():
+    # Placeholder for settings functionality
+    # Here you can draw a new screen or overlay with settings options
+    settings_screen()
+    
+def set_fullscreen():
+    global screen
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT)) #, pygame.FULLSCREEN not working as expected
+    print("Setting Fullscreen")
+    
+def set_windowed():
+    global screen
+    print("Setting Windowed")
+    screen = pygame.display.set_mode((SCREEN_WIDTH - (0.1 * SCREEN_WIDTH), SCREEN_HEIGHT - (0.1 * SCREEN_HEIGHT)))
+    
+# Function to handle the settings screen
+def settings_screen():
+    running = True
+    # Create buttons for windowed and full-screen modes
+    windowed_button = Button('Windowed Mode', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2), 5, action=set_windowed) 
+    fullscreen_button = Button('Full Screen', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 50), 5, action=set_fullscreen)
+    # Background of the Settings 
+    background_settings = pygame.image.load(os.path.join("assets", "settings_menu", "Settings_Menu_Background_Game_Image.png") )
+    background_settings = pygame.transform.scale(background_settings, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+
+    while running:
+        print(screen)
+        screen.blit(background_settings, (0, 0))
+
+        # Draw buttons
+        windowed_button.draw()
+        fullscreen_button.draw()
+
+        # Event handling for the settings screen
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+
+            # Update buttons based on mouse position and click
+            mouse_pos = pygame.mouse.get_pos()
+            for button in [windowed_button, fullscreen_button]:
+                button.top_rect.collidepoint(mouse_pos)
+                button.check_click()
+
+        # Update the display
+        pygame.display.update()
+
+        
 
 # Main menu loop
 def main_menu():
