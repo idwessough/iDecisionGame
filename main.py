@@ -256,7 +256,7 @@ class Building:
         # Calculate current position on the screen with the center at the original position
         screen_pos = [self.original_pos[0] * zoom + map_pos[0] - scaled_width // 2,
                       self.original_pos[1] * zoom + map_pos[1] - scaled_height // 2]
-
+        print(scaled_image, screen_pos)
         surface.blit(scaled_image, screen_pos)
         
 # List to store buildings
