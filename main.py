@@ -45,6 +45,7 @@ BUILDING_PATH = os.path.join(ASSETS_PATH, "buildings", graphics_level)
 ICON_PATH = os.path.join(ASSETS_PATH, "icons")
 SCIENCE_PATH = os.path.join(ASSETS_PATH, "science")
 RESOURCES_PATH = os.path.join(ASSETS_PATH, "resources")
+DEPOSITS_PATH = os.path.join(ASSETS_PATH, "deposits")
 
 # Define the color for the shapes (brown with alpha)
 shape_color = (139, 69, 19, 177)  # 128 is the alpha value for semi-transparency
@@ -72,57 +73,16 @@ build_menu_visible = False
 build_menu_rect = pygame.Rect(0, HEIGHT - MENU_HEIGHT, WIDTH, MENU_HEIGHT)
 # Calculate the number of icons per row based on the width of the build menu and the size of the icons plus padding
 icons_per_row = build_menu_rect.width // (ICON_SIZE + ICON_PADDING)
-
+BUILDINGS_DATA_FILE_PATH = os.path.join("buildings_data.csv") 
+SEPARATOR= ","
 # Paths for the differents building types images
-building_types = {
-    "House": os.path.join(BUILDING_PATH, "house.png"),
-    "Factory": os.path.join(BUILDING_PATH, "factory.png"),
-    "School": os.path.join(BUILDING_PATH, "school.png"),
-    "Steel_Mill": os.path.join(BUILDING_PATH, "steel_mill.png"),
-    "Town_Hall": os.path.join(BUILDING_PATH, "town_hall.png"),
-    "1": os.path.join(BUILDING_PATH, "factory.png"),
-    "2": os.path.join(BUILDING_PATH, "factory.png"),
-    "3": os.path.join(BUILDING_PATH, "school.png"),
-    "4": os.path.join(BUILDING_PATH, "steel_mill.png"),
-    "5": os.path.join(BUILDING_PATH, "town_hall.png"),
-    "6": os.path.join(BUILDING_PATH, "house.png"),
-    "7": os.path.join(BUILDING_PATH, "factory.png"),
-    "8": os.path.join(BUILDING_PATH, "school.png"),
-    "9": os.path.join(BUILDING_PATH, "steel_mill.png"),
-    "10": os.path.join(BUILDING_PATH, "town_hall.png"),
-    "11": os.path.join(BUILDING_PATH, "house.png"),
-    "12": os.path.join(BUILDING_PATH, "factory.png"),
-    "13": os.path.join(BUILDING_PATH, "school.png"),
-    "14": os.path.join(BUILDING_PATH, "steel_mill.png"),
-    "15": os.path.join(BUILDING_PATH, "town_hall.png"),
-    "16": os.path.join(BUILDING_PATH, "house.png"),
-    "17": os.path.join(BUILDING_PATH, "factory.png"),
-    "18": os.path.join(BUILDING_PATH, "school.png"),
-    "19": os.path.join(BUILDING_PATH, "steel_mill.png"),
-    "21": os.path.join(BUILDING_PATH, "town_hall.png"),
-    "22": os.path.join(BUILDING_PATH, "house.png"),
-    "23": os.path.join(BUILDING_PATH, "factory.png"),
-    "24": os.path.join(BUILDING_PATH, "school.png"),
-    "25": os.path.join(BUILDING_PATH, "steel_mill.png"),
-    "26": os.path.join(BUILDING_PATH, "town_hall.png"),
-    "27": os.path.join(BUILDING_PATH, "house.png"),
-    "28": os.path.join(BUILDING_PATH, "factory.png"),
-    "29": os.path.join(BUILDING_PATH, "school.png"),
-    "30": os.path.join(BUILDING_PATH, "steel_mill.png"),
-    "31": os.path.join(BUILDING_PATH, "town_hall.png"),
-    "32": os.path.join(BUILDING_PATH, "house.png"),
-    "33": os.path.join(BUILDING_PATH, "factory.png"),
-    "34": os.path.join(BUILDING_PATH, "school.png"),
-    "35": os.path.join(BUILDING_PATH, "steel_mill.png"),
-    "36": os.path.join(BUILDING_PATH, "town_hall.png"),
-    "37": os.path.join(BUILDING_PATH, "house.png"),
-    "38": os.path.join(BUILDING_PATH, "factory.png"),
-    "39": os.path.join(BUILDING_PATH, "school.png"),
-    "40": os.path.join(BUILDING_PATH, "steel_mill.png"),
-    "41": os.path.join(BUILDING_PATH, "town_hall.png"),
-    "42": os.path.join(BUILDING_PATH, "house.png")
+df_buildings = pd.read_csv(BUILDINGS_DATA_FILE_PATH, sep=SEPARATOR)
+buildings_data = df_buildings
+# print(buildings_data["icon_path"])
+deposits_types = {
+    "coal_deposit": os.path.join(DEPOSITS_PATH, "coal_deposit.png"),
+    "steel_deposit": os.path.join(DEPOSITS_PATH, "steel_deposit.png")
 }
-
 # Scale images to desired sizes
 def scale_icon(image, type):
     if type == "resources_inventory":
@@ -160,43 +120,63 @@ resource_amounts = {
     # ... add more resources as needed
 }
 
+# # Define two separate dictionaries for left and right side resources 
+# left_side_resources = {
+#     "gold": resource_amounts["gold"],
+#     "wood": resource_amounts["wood"],
+#     "stone": resource_amounts["stone"],
+#     "food": resource_amounts["food"],
+#     "water": resource_amounts["water"]
+#     # ... other resources to display on the left .. 
+# }
+
+# right_side_resources = {
+#     "steel": resource_amounts["steel"],
+#     "bloom": resource_amounts["bloom"],
+#     "chromium_bars": resource_amounts["chromium_bars"],
+#     "wirerod": resource_amounts["wirerod"],
+#     "laminated_stainless_steel_alloy": resource_amounts["laminated_stainless_steel_alloy"]
+#     # ... other resources to display on the right .. 
+# }
+
 # Define two separate dictionaries for left and right side resources 
-left_side_resources = {
-    "gold": resource_amounts["gold"],
-    "wood": resource_amounts["wood"],
-    "stone": resource_amounts["stone"],
-    "food": resource_amounts["food"],
-    "water": resource_amounts["water"]
+left_resources = {
+    "gold",
+    "wood",
+    "stone",
+    "food",
+    "water"
     # ... other resources to display on the left .. 
 }
 
-right_side_resources = {
-    "steel": resource_amounts["steel"],
-    "bloom": resource_amounts["bloom"],
-    "chromium_bars": resource_amounts["chromium_bars"],
-    "wirerod": resource_amounts["wirerod"],
-    "laminated_stainless_steel_alloy": resource_amounts["laminated_stainless_steel_alloy"]
+right_resources = {
+    "steel",
+    "bloom",
+    "chromium_bars",
+    "wirerod",
+    "laminated_stainless_steel_alloy"
     # ... other resources to display on the right .. 
 }
+
 
 # Define the font for the resource amounts display
 resource_font = pygame.font.SysFont(None, 24)
 
 
 # Function to draw the resources on the screen
-def draw_resources(surface, resources, amounts, font, start_x, start_y, direction, icon_size=42):
+def draw_resources(surface, resources_icon, resources, font, start_x, start_y, direction, icon_size=42):
     x, y = start_x, start_y
     # Text need to appear in the middle of y axes width of the resource icon
     y_text = icon_size / 2
     padding = 7
     
-    for resource, amount in amounts.items():
+    for resource_type in resources:
         # Draw the icon
-        icon = resources[resource]
+        icon = resources_icon[resource_type]
         surface.blit(icon, (x, y))
 
         # Draw the amount text
-        text_surf = font.render(f"{amount}", True, (255, 255, 255))
+        text_surf = font.render(f"{resource_manager.get_resource_amount(resource_type)}", True, (255, 255, 255))
         text_x = x + icon_size if direction == 'right' else x - text_surf.get_width() 
         surface.blit(text_surf, (text_x, y_text))
 
@@ -221,7 +201,9 @@ def draw_build_menu(surface, menu_rect, icons, font):
     surface.fill((200, 200, 200), menu_rect)  # Draw the menu background
 
     icons_per_row = menu_rect.width // (ICON_SIZE + ICON_PADDING)  # Icons per row
-    for i, (name, icon_path) in enumerate(icons.items()):
+    for i, icon_path in enumerate(buildings_data["icon_path"]) : # (name, icon_path)
+    #for i, (name, icon_path, gathering_rate) in buildings_data.iterrows(): 
+        icon_path = os.path.join(BUILDING_PATH, icon_path) 
         row = i // icons_per_row
         col = i % icons_per_row
         x = menu_rect.x + col * (ICON_SIZE + ICON_PADDING) + ICON_PADDING
@@ -234,17 +216,21 @@ def draw_build_menu(surface, menu_rect, icons, font):
         surface.blit(icon, icon_rect)
 
         # Draw the building name
+        name = buildings_data.loc[i, "name"]
         text_surf = font.render(name, True, (0, 0, 0))
         text_rect = text_surf.get_rect(center=(x + ICON_SIZE // 2, y + ICON_SIZE + TEXT_HEIGHT // 2))
         surface.blit(text_surf, text_rect)
 
 # Class for Buildings
 class Building:
-    def __init__(self, image_path, map_pos):
-        self.original_image = pygame.image.load(image_path).convert_alpha()
+    def __init__(self, image_path, building_name, gathering_rate, map_pos):
+        self.original_image = pygame.image.load(os.path.join(BUILDING_PATH, image_path)).convert_alpha()
         self.original_pos = map_pos  # Center position relative to the map
         self.width = self.original_image.get_width()
         self.height = self.original_image.get_height()
+        self.name = building_name
+        # self.name = name
+        self.gathering_rate = gathering_rate  # dict, e.g., {"wood": 5, "steel": 10}
 
     def draw(self, surface, map_pos, zoom):
         # Scale building size and calculate the new width and height
@@ -255,13 +241,37 @@ class Building:
 
         # Calculate current position on the screen with the center at the original position
         screen_pos = [self.original_pos[0] * zoom + map_pos[0] - scaled_width // 2,
-                      self.original_pos[1] * zoom + map_pos[1] - scaled_height // 2]
-        print(scaled_image, screen_pos)
+                      self.original_pos[1] * zoom + map_pos[1] - scaled_height // 2] 
         surface.blit(scaled_image, screen_pos)
         
+class ResourceManager:
+    def __init__(self):
+        self.resources = {
+            "wood": 200000002,
+            "steel": 1000,
+            "gold": 2000000,
+            "wood": 200000000,
+            "stone": 42000,
+            "food": 10000,
+            "water": 10000, 
+            "bloom": 700 
+            # ... add more resources as needed
+        }
+    
+    def update_resources(self, buildings):
+        for building in buildings:
+            print(eval(building.gathering_rate)) 
+            for resource, rate in eval(building.gathering_rate).items():
+                self.resources[resource] += rate
+
+    def get_resource_amount(self, resource):
+        return self.resources.get(resource, 0)
+
+
 # List to store buildings
 buildings = []
-
+# ResourceManager instance
+resource_manager = ResourceManager()
 # Main game loop
 running = True
 while running:
@@ -300,11 +310,12 @@ while running:
                    icon_top_bound <= relative_y <= icon_bottom_bound:
                     # Calculate the index of the selected building
                     index = row * icons_per_row + col
-                    if 0 <= index < len(building_types):
-                        selected_building_type, building_path = list(building_types.items())[index]
+                    if 0 <= index < len(buildings_data):
+                        selected_building_type, building_path, gathering_rate = list(buildings_data.iloc[index,:]) 
+                        
                         if resources >= 50:  # Placeholder resource check
                             resources -= 50  # Deduct resources
-                            selected_building = (selected_building_type, building_path)
+                            selected_building = (selected_building_type, building_path, gathering_rate)
                             building_selected = True  # Indicate that a building has been selected
                             build_menu_visible = False  # Optionally hide the menu after selection
                         else:
@@ -317,11 +328,11 @@ while running:
                 if pygame.mouse.get_pressed()[0]:  # Left mouse click
                     mouse_position = pygame.mouse.get_pos()
                     
-                    # Get the building type and image path
-                    building_type, building_path = selected_building
+                    # Get the building type and image path + gathering rate
+                    building_type, building_path, gathering_rate = selected_building
                     
                     # Create a temporary Building object to get the width and height
-                    temp_building = Building(building_path, (0, 0))
+                    temp_building = Building(building_path, building_type, 0, (0, 0))
                     
                     # Calculate the center position to place the building
                     # We adjust by half the width and height of the scaled building image
@@ -333,7 +344,8 @@ while running:
                     )
                     
                     # Add the new building to the list of buildings
-                    buildings.append(Building(building_path, map_click_pos))
+                    buildings.append(Building(building_path, building_type, gathering_rate, map_click_pos))
+                    #resource_manager.buying(buildings[-1].cost)
                     selected_building = None
                     building_selected = False  # Reset the building selected flag
 
@@ -354,7 +366,8 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key in [pygame.K_PLUS, pygame.K_EQUALS]:
                 zoom_level += zoom_speed
-                print(zoom_level)
+            elif event.key in [pygame.K_MINUS]:
+                zoom_level -= zoom_speed
         elif event.type == pygame.MOUSEWHEEL:
             if event.y == 1 and zoom_level < maximum_zoom:
                 zoom_level += zoom_speed
@@ -371,6 +384,9 @@ while running:
     if keys[pygame.K_DOWN]:
         map_position[1] -= camera_speed
 
+    # Updating resources
+    resource_manager.update_resources(buildings)
+    
     # Clear screen
     screen.fill((0, 0, 0))
 
@@ -388,22 +404,22 @@ while running:
     screen.blit(rectangle_surface, (0,0))
     
     # Draw left side resources
-    draw_resources(screen, resource_icons, left_side_resources, resource_font, 10, 10, "right", 77)
+    draw_resources(screen, resource_icons, left_resources, resource_font, 10, 10, "right", 77)
     
     # Draw right side resources
     right_start_x = WIDTH - 10  # Start from the right edge of the screen
     #for amount in right_side_resources.values():
     #    right_start_x -= (resource_font.size(str(amount))[0] + ICON_SIZE + RESOURCE_PADDING * 2)  # Adjust starting X position based on the width of the resources
     
-    draw_resources(screen, resource_icons, right_side_resources, resource_font, right_start_x, 10, "left", 77)
+    draw_resources(screen, resource_icons, right_resources, resource_font, right_start_x, 10, "left", 77)
     
     # Draw buildings
     for building in buildings:
         building.draw(screen, map_position, zoom_level) 
 
     # Draw build menu if visible
-    if build_menu_visible:
-        draw_build_menu(screen, build_menu_rect, building_types, font)
+    if build_menu_visible: 
+        draw_build_menu(screen, build_menu_rect, buildings_data["icon_path"], font)
     
     clock.tick(maximum_fps)
     #print(clock.get_fps())
