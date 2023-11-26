@@ -37,6 +37,11 @@ building_selected = False  # Flag to indicate if a building is selected
 boundary_width = 10
 graphics_levels = ["low", "medium", "high", "ultra", "extra"]
 graphics_level = graphics_levels[0]
+# Define boundary zones as pygame.Rect objects
+left_boundary = pygame.Rect(0, 0, boundary_width, HEIGHT)
+right_boundary = pygame.Rect(WIDTH - boundary_width, 0, boundary_width, HEIGHT)
+top_boundary = pygame.Rect(0, 0, WIDTH, boundary_width)
+bottom_boundary = pygame.Rect(0, HEIGHT - boundary_width, WIDTH, boundary_width)
 
 # Paths of differents Assets
 ASSETS_PATH = os.path.join("assets") 
@@ -292,15 +297,15 @@ running = True
 while running:
     current_time = time.time()
     for event in pygame.event.get():
+        # Get the current mouse position
+        mouse_position = pygame.mouse.get_pos()
         if developer_option and event:
             print(event)
 
         if event.type == pygame.QUIT:
             running = False
-
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_position = event.pos
-
+    
+        elif event.type == pygame.MOUSEBUTTONDOWN: 
             # Toggle build menu visibility
             if build_icon_rect.collidepoint(event.pos) and not building_selected:
                 build_menu_visible = not build_menu_visible
@@ -390,25 +395,16 @@ while running:
             elif event.y == -1 and zoom_level > minimum_zoom:
                 zoom_level -= zoom_speed
                 
-    # Movement controls
-    # Get the current mouse position
-    mouse_x, mouse_y = pygame.mouse.get_pos()
-
-    # Check for left boundary
-    if mouse_x < boundary_width:
+    # Movement controls Check for screen boundaries and update map position based on mouse positionn
+    if left_boundary.collidepoint(mouse_position):
         map_position[0] += camera_speed
-
-    # Check for right boundary
-    if mouse_x > WIDTH - boundary_width:
+    elif right_boundary.collidepoint(mouse_position):
         map_position[0] -= camera_speed
-
-    # Check for top boundary
-    if mouse_y < boundary_width:
+    if top_boundary.collidepoint(mouse_position):
         map_position[1] += camera_speed
-
-    # Check for bottom boundary
-    if mouse_y > HEIGHT - boundary_width:
+    elif bottom_boundary.collidepoint(mouse_position):
         map_position[1] -= camera_speed
+    # Arrow controls mapping movements    
     if keys[pygame.K_LEFT]:
         map_position[0] += camera_speed
     if keys[pygame.K_RIGHT]:
