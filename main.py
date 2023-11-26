@@ -2,6 +2,7 @@ import pygame
 import os
 import ctypes
 import pandas as pd
+import time
 
 # Function to set DPI Awareness 
 def set_dpi_awareness():
@@ -33,7 +34,7 @@ clock = pygame.time.Clock()
 maximum_fps = 60
 developer_option = False
 building_selected = False  # Flag to indicate if a building is selected
-
+boundary_width = 10
 graphics_levels = ["low", "medium", "high", "ultra", "extra"]
 graphics_level = graphics_levels[0]
 
@@ -74,11 +75,14 @@ build_menu_rect = pygame.Rect(0, HEIGHT - MENU_HEIGHT, WIDTH, MENU_HEIGHT)
 # Calculate the number of icons per row based on the width of the build menu and the size of the icons plus padding
 icons_per_row = build_menu_rect.width // (ICON_SIZE + ICON_PADDING)
 BUILDINGS_DATA_FILE_PATH = os.path.join("buildings_data.csv") 
-SEPARATOR= ","
+SEPARATOR= ";"
 # Paths for the differents building types images
 df_buildings = pd.read_csv(BUILDINGS_DATA_FILE_PATH, sep=SEPARATOR)
 buildings_data = df_buildings
 # print(buildings_data["icon_path"])
+
+TIME_INTERVAL = 5
+
 deposits_types = {
     "coal_deposit": os.path.join(DEPOSITS_PATH, "coal_deposit.png"),
     "steel_deposit": os.path.join(DEPOSITS_PATH, "steel_deposit.png")
@@ -188,7 +192,7 @@ selected_building = None
 resources = 10000  # Placeholder for player's resources
 
 # Load the map
-map_image = pygame.image.load(os.path.join(MAPPING_PATH, "q_mapping.png")).convert()
+map_image = pygame.image.load(os.path.join(MAPPING_PATH, "q_mapping.png")).convert() 
 map_rect = map_image.get_rect()
 map_position = [0, 0]  # Initial position
 zoom_level = 1.0  # Initial zoom level
@@ -223,12 +227,13 @@ def draw_build_menu(surface, menu_rect, icons, font):
 
 # Class for Buildings
 class Building:
-    def __init__(self, image_path, building_name, gathering_rate, map_pos):
+    def __init__(self, image_path, building_name, gathering_rate, building_cost, map_pos):
         self.original_image = pygame.image.load(os.path.join(BUILDING_PATH, image_path)).convert_alpha()
         self.original_pos = map_pos  # Center position relative to the map
         self.width = self.original_image.get_width()
         self.height = self.original_image.get_height()
         self.name = building_name
+        self.building_cost = building_cost
         # self.name = name
         self.gathering_rate = gathering_rate  # dict, e.g., {"wood": 5, "steel": 10}
 
@@ -257,12 +262,22 @@ class ResourceManager:
             "bloom": 700 
             # ... add more resources as needed
         }
+        self.last_update = time.time() 
     
-    def update_resources(self, buildings):
-        for building in buildings:
-            print(eval(building.gathering_rate)) 
-            for resource, rate in eval(building.gathering_rate).items():
-                self.resources[resource] += rate
+    def update_resources(self, current_time, buildings):
+        if current_time - self.last_update >= TIME_INTERVAL:
+            # Update resources
+            self.last_update = current_time 
+            # Rest of your update logic
+            for building in buildings:
+                print(eval(building.gathering_rate)) 
+                for resource, rate in eval(building.gathering_rate).items():
+                    self.resources[resource] += rate
+
+    def buying(self, cost):
+        print(cost)
+        for resource_type, cost_amount in eval(cost).items():
+            self.resources[resource_type] -= cost_amount
 
     def get_resource_amount(self, resource):
         return self.resources.get(resource, 0)
@@ -275,6 +290,7 @@ resource_manager = ResourceManager()
 # Main game loop
 running = True
 while running:
+    current_time = time.time()
     for event in pygame.event.get():
         if developer_option and event:
             print(event)
@@ -311,7 +327,7 @@ while running:
                     # Calculate the index of the selected building
                     index = row * icons_per_row + col
                     if 0 <= index < len(buildings_data):
-                        selected_building_type, building_path, gathering_rate = list(buildings_data.iloc[index,:]) 
+                        selected_building_type, building_path, gathering_rate, cost = list(buildings_data.iloc[index,:]) 
                         
                         if resources >= 50:  # Placeholder resource check
                             resources -= 50  # Deduct resources
@@ -332,7 +348,7 @@ while running:
                     building_type, building_path, gathering_rate = selected_building
                     
                     # Create a temporary Building object to get the width and height
-                    temp_building = Building(building_path, building_type, 0, (0, 0))
+                    temp_building = Building(building_path, building_type, 0, 0, (0, 0))
                     
                     # Calculate the center position to place the building
                     # We adjust by half the width and height of the scaled building image
@@ -344,8 +360,8 @@ while running:
                     )
                     
                     # Add the new building to the list of buildings
-                    buildings.append(Building(building_path, building_type, gathering_rate, map_click_pos))
-                    #resource_manager.buying(buildings[-1].cost)
+                    buildings.append(Building(building_path, building_type, gathering_rate, cost, map_click_pos))
+                    resource_manager.buying(buildings[-1].building_cost)
                     selected_building = None
                     building_selected = False  # Reset the building selected flag
 
@@ -360,7 +376,7 @@ while running:
         keys = pygame.key.get_pressed()
         
         if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]: 
-            camera_speed = 7 
+            camera_speed = 17 
 
         # Zoom controls
         elif event.type == pygame.KEYDOWN:
@@ -375,6 +391,24 @@ while running:
                 zoom_level -= zoom_speed
                 
     # Movement controls
+    # Get the current mouse position
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+
+    # Check for left boundary
+    if mouse_x < boundary_width:
+        map_position[0] += camera_speed
+
+    # Check for right boundary
+    if mouse_x > WIDTH - boundary_width:
+        map_position[0] -= camera_speed
+
+    # Check for top boundary
+    if mouse_y < boundary_width:
+        map_position[1] += camera_speed
+
+    # Check for bottom boundary
+    if mouse_y > HEIGHT - boundary_width:
+        map_position[1] -= camera_speed
     if keys[pygame.K_LEFT]:
         map_position[0] += camera_speed
     if keys[pygame.K_RIGHT]:
@@ -385,7 +419,7 @@ while running:
         map_position[1] -= camera_speed
 
     # Updating resources
-    resource_manager.update_resources(buildings)
+    resource_manager.update_resources(current_time, buildings) 
     
     # Clear screen
     screen.fill((0, 0, 0))
@@ -420,9 +454,14 @@ while running:
     # Draw build menu if visible
     if build_menu_visible: 
         draw_build_menu(screen, build_menu_rect, buildings_data["icon_path"], font)
-    
-    clock.tick(maximum_fps)
-    #print(clock.get_fps())
+    fps = clock.get_fps()
+    # Render FPS
+    fps_text = font.render(f"FPS: {int(fps)}", True, (255, 255, 255))
+    text_rect = fps_text.get_rect()
+    screen.blit(fps_text, (WIDTH - text_rect.width - 10, HEIGHT - text_rect.height - 10))
+
+    clock.tick(120)
+    #print()
     
     # Update the display
     pygame.display.flip()

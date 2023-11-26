@@ -1,47 +1,47 @@
-name,icon_path,gathering_rate
-"House","house.png",{"wood": 42}
-"Factory","factory.png",{"steel": 242}
-"School","school.png",{"food": 50}
-"Steel_Mill","steel_mill.png",{"bloom": 100}
-"Town_Hall","town_hall.png",{"water": 4242}
-"1","factory.png",{} 
-"2","factory.png",{}
-"3","school.png",{}
-"4","steel_mill.png",{}
-"5","town_hall.png",{}
-"6","house.png",{}
-"7","factory.png",{}
-"8","school.png",{}
-"9","steel_mill.png",{}
-"10","town_hall.png",{}
-"11","house.png",{}
-"12","factory.png",{}
-"13","school.png",{}
-"14","steel_mill.png",{}
-"15","town_hall.png",{}
-"16","house.png",{}
-"17","factory.png",{}
-"18","school.png",{}
-"19","steel_mill.png",{}
-"21","town_hall.png",{}
-"22","house.png",{}
-"23","factory.png",{}
-"24","school.png",{}
-"25","steel_mill.png",{}
-"26","town_hall.png",{}
-"27","house.png",{}
-"28","factory.png",{}
-"29","school.png",{}
-"30","steel_mill.png",{}
-"31","town_hall.png",{}
-"32","house.png",{}
-"33","factory.png",{}
-"34","school.png",{}
-"35","steel_mill.png",{}
-"36","town_hall.png",{}
-"37","house.png",{}
-"38","factory.png",{}
-"39","school.png",{}
-"40","steel_mill.png",{}
-"41","town_hall.png",{}
-"42","house.png",{}
+name;icon_path;gathering_rate;cost
+"House";"house.png";{"wood": 42};{"wood":242}
+"Factory";"factory.png";{"steel": 242};{"wood":4242,"steel":10000}
+"School";"school.png";{"food": 50};{"wood":10042,"steel":20000}
+"Steel_Mill";"steel_mill.png";{"bloom": 100};{"steel":420000}
+"Town_Hall";"town_hall.png";{"water": 4242};{"food":4242,"steel":10000,"bloom":42,"water":42}
+"1";"factory.png";{};{} 
+"2";"factory.png";{};{}
+"3";"school.png";{};{}
+"4";"steel_mill.png";{};{}
+"5";"town_hall.png";{};{}
+"6";"house.png";{};{}
+"7";"factory.png";{};{}
+"8";"school.png";{};{}
+"9";"steel_mill.png";{};{}
+"10";"town_hall.png";{};{}
+"11";"house.png";{};{}
+"12";"factory.png";{};{}
+"13";"school.png";{};{}
+"14";"steel_mill.png";{};{}
+"15";"town_hall.png";{};{}
+"16";"house.png";{};{}
+"17";"factory.png";{};{}
+"18";"school.png";{};{}
+"19";"steel_mill.png";{};{}
+"21";"town_hall.png";{};{}
+"22";"house.png";{};{}
+"23";"factory.png";{};{}
+"24";"school.png";{};{}
+"25";"steel_mill.png";{};{}
+"26";"town_hall.png";{};{}
+"27";"house.png";{};{}
+"28";"factory.png";{};{}
+"29";"school.png";{};{}
+"30";"steel_mill.png";{};{}
+"31";"town_hall.png";{};{}
+"32";"house.png";{};{}
+"33";"factory.png";{};{}
+"34";"school.png";{};{}
+"35";"steel_mill.png";{};{}
+"36";"town_hall.png";{};{}
+"37";"house.png";{};{}
+"38";"factory.png";{};{}
+"39";"school.png";{};{}
+"40";"steel_mill.png";{};{}
+"41";"town_hall.png";{};{}
+"42";"house.png";{};{}
