@@ -47,7 +47,7 @@ bottom_boundary = pygame.Rect(0, HEIGHT - boundary_width, WIDTH, boundary_width)
 ASSETS_PATH = os.path.join("assets") 
 MAPPING_PATH = os.path.join(ASSETS_PATH, "mapping")
 MENU_PATH = os.path.join(ASSETS_PATH, "home_menu")
-BUILDING_PATH = os.path.join(ASSETS_PATH, "buildings", graphics_level)
+BUILDING_PATH = os.path.join(ASSETS_PATH, "buildings")# , graphics_level
 ICON_PATH = os.path.join(ASSETS_PATH, "icons")
 SCIENCE_PATH = os.path.join(ASSETS_PATH, "science")
 RESOURCES_PATH = os.path.join(ASSETS_PATH, "resources")
@@ -150,11 +150,13 @@ resource_amounts = {
 
 # Define two separate dictionaries for left and right side resources 
 left_resources = {
-    "gold",
-    "wood",
-    "stone",
     "food",
-    "water"
+    "water",
+    "wood",
+    "gold",
+    "stone",
+    "concrete",
+    "energy"
     # ... other resources to display on the left .. 
 }
 
@@ -163,7 +165,9 @@ right_resources = {
     "bloom",
     "chromium_bars",
     "wirerod",
-    "laminated_stainless_steel_alloy"
+    "laminated_stainless_steel_alloy",
+    "sand",
+    "glass"
     # ... other resources to display on the right .. 
 }
 
@@ -197,7 +201,7 @@ selected_building = None
 resources = 10000  # Placeholder for player's resources
 
 # Load the map
-map_image = pygame.image.load(os.path.join(MAPPING_PATH, "q_mapping.png")).convert() 
+map_image = pygame.image.load(os.path.join(MAPPING_PATH, graphics_level, "mapping.png")).convert() 
 map_rect = map_image.get_rect()
 map_position = [0, 0]  # Initial position
 zoom_level = 1.0  # Initial zoom level
@@ -212,7 +216,7 @@ def draw_build_menu(surface, menu_rect, icons, font):
     icons_per_row = menu_rect.width // (ICON_SIZE + ICON_PADDING)  # Icons per row
     for i, icon_path in enumerate(buildings_data["icon_path"]) : # (name, icon_path)
     #for i, (name, icon_path, gathering_rate) in buildings_data.iterrows(): 
-        icon_path = os.path.join(BUILDING_PATH, icon_path) 
+        icon_path = os.path.join(BUILDING_PATH, GRAPHICS_LEVELS[0], icon_path) 
         row = i // icons_per_row
         col = i % icons_per_row
         x = menu_rect.x + col * (ICON_SIZE + ICON_PADDING) + ICON_PADDING
@@ -233,7 +237,7 @@ def draw_build_menu(surface, menu_rect, icons, font):
 # Class for Buildings
 class Building:
     def __init__(self, image_path, building_name, gathering_rate, building_cost, map_pos):
-        self.original_image = pygame.image.load(os.path.join(BUILDING_PATH, image_path)).convert_alpha()
+        self.original_image = pygame.image.load(os.path.join(BUILDING_PATH, graphics_level, image_path)).convert_alpha()
         self.original_pos = map_pos  # Center position relative to the map
         self.width = self.original_image.get_width()
         self.height = self.original_image.get_height()
@@ -257,14 +261,14 @@ class Building:
 class ResourceManager:
     def __init__(self):
         self.resources = {
+            "water": 10000, 
+            "food": 10000,
             "wood": 200000002,
+            "gold": 2000000,
+            "stone": 42000,
+            "concrete": 42,
             "steel": 1000,
             "coal": 10,
-            "gold": 2000000,
-            "wood": 200000000,
-            "stone": 42000,
-            "food": 10000,
-            "water": 10000, 
             "bloom": 700 
             # ... add more resources as needed
         }
