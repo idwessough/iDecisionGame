@@ -60,14 +60,18 @@ shape_color = (139, 69, 19, 177)  # 128 is the alpha value for semi-transparency
 trapezoid_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
 rectangle_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
 
-# Define the points for trapezoids shape
-upper_trapezoid_points_left = [(0, 0), ((WIDTH / 2) - 77, 0), ((WIDTH / 2) - 242, 77), (0, 77)]  # Replace with your actual points
-# Layout resources
+# Define the points for trapezoids shape Layout resources
+upper_trapezoid_points_left = [(0, 0), ((WIDTH / 2) - 77, 0), ((WIDTH / 2) - 242, 77), (0, 77)] 
 upper_trapezoid_points_right = [(WIDTH, 0), ((WIDTH / 2) + 77, 0), ((WIDTH / 2) + 242, 77), (WIDTH, 77)] 
+lower_trapezoid_points_left = [(0, HEIGHT), (0, HEIGHT - 77), ((WIDTH / 2) - 242, HEIGHT - 77), ((WIDTH / 2) - 77, HEIGHT)]
+lower_trapezoid_points_right = [(WIDTH, HEIGHT), (WIDTH, HEIGHT - 77), ((WIDTH / 2) + 242, HEIGHT - 77), ((WIDTH / 2) + 77, HEIGHT)]
 
 # Draw the shapes on their respective surfaces
 pygame.draw.polygon(trapezoid_surface, shape_color, upper_trapezoid_points_left)
 pygame.draw.polygon(rectangle_surface, shape_color, upper_trapezoid_points_right)
+# Draw the lower trapezoids on their respective surfaces
+pygame.draw.polygon(trapezoid_surface, shape_color, lower_trapezoid_points_left)
+pygame.draw.polygon(rectangle_surface, shape_color, lower_trapezoid_points_right)
 
 # Build icon and menu variables
 build_icon = pygame.image.load(os.path.join(ICON_PATH, "build_menu.png")).convert_alpha()  # Placeholder for an icon 
@@ -86,7 +90,7 @@ df_buildings = pd.read_csv(BUILDINGS_DATA_FILE_PATH, sep=SEPARATOR)
 buildings_data = df_buildings
 # print(buildings_data["icon_path"])
 
-TIME_INTERVAL = 5
+TIME_INTERVAL = 1
 
 deposits_types = {
     "coal_deposit": os.path.join(DEPOSITS_PATH, "coal_deposit.png"),
@@ -101,102 +105,97 @@ def scale_icon(image, type):
 
 # Assuming you have loaded the resource icons somewhere in your code
 resource_icons = {
-    "gold": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "gold.png")).convert_alpha(), "resources_inventory"),
-    "wood": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "wood.png")).convert_alpha(), "resources_inventory"),
-    "stone": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "stone.png")).convert_alpha(), "resources_inventory"),
-    "food": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "food.png")).convert_alpha(), "resources_inventory"),
     "water": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "water.png")).convert_alpha(), "resources_inventory"),
+    "food": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "food.png")).convert_alpha(), "resources_inventory"),
+    "wood": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "wood.png")).convert_alpha(), "resources_inventory"),
+    "gold": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "gold.png")).convert_alpha(), "resources_inventory"),
+    "energy":scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "energy.png")).convert_alpha(), "resources_inventory"),
+    "stone": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "stone.png")).convert_alpha(), "resources_inventory"),
+    "concrete": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "concrete.png")).convert_alpha(), "resources_inventory"),
+    "heavy_duty_reinforced_concrete":scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "heavy_duty_reinforced_concrete.png")).convert_alpha(), "resources_inventory"), 
+    "sand":scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "sand_perfect.png")).convert_alpha(), "resources_inventory"),
+    "glass":scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "glass.png")).convert_alpha(), "resources_inventory"),
+    "coal":scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "coal.png")).convert_alpha(), "resources_inventory"),
+    "uranium":scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "uranium.png")).convert_alpha(), "resources_inventory"),
+    "U235_Combustible_fully_enriched":scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "U235_Combustible_fully_enriched.png")).convert_alpha(), "resources_inventory"),
     "steel": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "steel.png")).convert_alpha(), "resources_inventory"),
-    "bloom": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "bloom.png")).convert_alpha(), "resources_inventory"),
+    "stainless_steel_long_product_bloom": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "stainless_steel_long_product_bloom.png")).convert_alpha(), "resources_inventory"),
     "chromium_bars": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "chromium_bars.png")).convert_alpha(), "resources_inventory"),
-    "wirerod": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "wirerod.png")).convert_alpha(), "resources_inventory"),
-    "laminated_stainless_steel_alloy": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "laminated_stainless_steel_alloy.png")).convert_alpha(), "resources_inventory")
+    "laminated_stainless_steel_alloy": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "laminated_stainless_steel_alloy.png")).convert_alpha(), "resources_inventory"),
+    "HSS_Structural_hollow_steel_section": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "HSS_Structural_hollow_steel_section.png")).convert_alpha(), "resources_inventory"),
+    "wirerod": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "wirerod.png")).convert_alpha(), "resources_inventory")
     # ... add more resources as needed
 }
 
-# Define the starting amounts for resources, this should be dynamic in playing actual game
-resource_amounts = {
-    "gold": 2000000,
-    "wood": 200000000,
-    "stone": 42000,
-    "food": 10000,
-    "water": 10000,
-    "steel": 1000,
-    "bloom": 700,
-    "chromium_bars": 500,
-    "wirerod": 250,
-    "laminated_stainless_steel_alloy": 42
-    # ... add more resources as needed
-}
-
-# # Define two separate dictionaries for left and right side resources 
-# left_side_resources = {
-#     "gold": resource_amounts["gold"],
-#     "wood": resource_amounts["wood"],
-#     "stone": resource_amounts["stone"],
-#     "food": resource_amounts["food"],
-#     "water": resource_amounts["water"]
-#     # ... other resources to display on the left .. 
-# }
-
-# right_side_resources = {
-#     "steel": resource_amounts["steel"],
-#     "bloom": resource_amounts["bloom"],
-#     "chromium_bars": resource_amounts["chromium_bars"],
-#     "wirerod": resource_amounts["wirerod"],
-#     "laminated_stainless_steel_alloy": resource_amounts["laminated_stainless_steel_alloy"]
-#     # ... other resources to display on the right .. 
-# }
+LEFT_SIDE_START_X = - 42 
+RIGHT_SIDE_START_X = (WIDTH // 2) + 177 
 
 # Define two separate dictionaries for left and right side resources 
-left_resources = {
-    "food",
+up_left_side_resources = [
     "water",
+    "food",
     "wood",
     "gold",
-    "stone",
-    "concrete",
     "energy"
-    # ... other resources to display on the left .. 
-}
+    ]
 
-right_resources = {
-    "steel",
-    "bloom",
-    "chromium_bars",
-    "wirerod",
-    "laminated_stainless_steel_alloy",
+up_right_side_resources = [
     "sand",
-    "glass"
-    # ... other resources to display on the right .. 
-}
+    "stone",
+    "coal",
+    "uranium",
+    "steel" 
+    ] 
 
+down_left_side_resources = [
+    "glass",
+    "concrete",
+    "heavy_duty_reinforced_concrete",
+    "U235_Combustible_fully_enriched" 
+    ]
 
+down_right_side_resources = [ 
+    "stainless_steel_long_product_bloom",
+    "chromium_bars",
+    "laminated_stainless_steel_alloy",
+    "HSS_Structural_hollow_steel_section",
+    "wirerod"
+    ]
+    
+    
+    # ... other resources to display on the right ..
+    
 # Define the font for the resource amounts display
 resource_font = pygame.font.SysFont(None, 24)
 
 
-# Function to draw the resources on the screen
-def draw_resources(surface, resources_icon, resources, font, start_x, start_y, direction, icon_size=42):
-    x, y = start_x, start_y
-    # Text need to appear in the middle of y axes width of the resource icon
-    y_text = icon_size / 2
-    padding = 7
+def draw_resources(surface, resources_icon, resources, font, start_x, start_y, location, side, icon_size=42, padding=42, little_padding=17):
+    # Calculate the total width available for each resource
+    total_resources = len(resources)
+    space_per_resource = ((WIDTH // 2) - (242 + 42))  // total_resources
+
+    # Initialize the x-coordinate for resource placement 
+    x = start_x
     
     for resource_type in resources:
         # Draw the icon
         icon = resources_icon[resource_type]
-        surface.blit(icon, (x, y))
+        icon_x = x + (space_per_resource - icon_size) // 2  # Center the icon in its allocated space
+        surface.blit(icon, (icon_x, start_y))
 
-        # Draw the amount text
-        text_surf = font.render(f"{resource_manager.get_resource_amount(resource_type)}", True, (255, 255, 255))
-        text_x = x + icon_size if direction == 'right' else x - text_surf.get_width() 
-        surface.blit(text_surf, (text_x, y_text))
+        # Draw the amount text right after the icon
+        text_surf = font.render(f"{resource_manager.get_resource_amount(resource_type)}", True, (255, 255, 255)) 
+        text_x = icon_x + icon_size + padding  # Position the text after the icon with a padding
+        text_y = (start_y + icon_size // 2) # (start_y + icon_size + (icon_size - text_surf.get_height())) // 2  # Vertically align the text with the icon 
+        surface.blit(text_surf, (text_x, text_y))
 
         # Update x to the next position
-        x = x + icon_size + text_surf.get_width() + padding * 2 if direction == 'right' else x - (icon_size + text_surf.get_width() + padding * 2)
+        x += space_per_resource + little_padding
 
-
+    # Ensure that the last resource does not go beyond the screen width
+    if x + icon_size > WIDTH:
+        x = WIDTH - icon_size
+        
 selected_building = None
 resources = 10000  # Placeholder for player's resources
 
@@ -265,6 +264,7 @@ class ResourceManager:
             "food": 10000,
             "wood": 200000002,
             "gold": 2000000,
+            "energy": 42424242,
             "stone": 42000,
             "concrete": 42,
             "steel": 1000,
@@ -438,15 +438,15 @@ while running:
     screen.blit(trapezoid_surface, (0,0))
     screen.blit(rectangle_surface, (0,0))
     
-    # Draw left side resources
-    draw_resources(screen, resource_icons, left_resources, resource_font, 10, 10, "right", 77)
+    # Draw upper left side resources
+    draw_resources(screen, resource_icons, up_left_side_resources, resource_font, LEFT_SIDE_START_X, 10, "up", "left") 
+    # Draw upper right side resources
+    draw_resources(screen, resource_icons, up_right_side_resources, resource_font, RIGHT_SIDE_START_X, 10, "up", "right") 
+    # Draw resources in the lower left corner
+    draw_resources(screen, resource_icons, down_left_side_resources, resource_font, LEFT_SIDE_START_X, 1000, "down", "left")
+    # Draw resources in the lower right corner 
+    draw_resources(screen, resource_icons, down_right_side_resources, resource_font, RIGHT_SIDE_START_X, 1000, "down", "right")
     
-    # Draw right side resources
-    right_start_x = WIDTH - 10  # Start from the right edge of the screen
-    #for amount in right_side_resources.values():
-    #    right_start_x -= (resource_font.size(str(amount))[0] + ICON_SIZE + RESOURCE_PADDING * 2)  # Adjust starting X position based on the width of the resources
-    
-    draw_resources(screen, resource_icons, right_resources, resource_font, right_start_x, 10, "left", 77)
     
     # Draw buildings
     for building in buildings:
