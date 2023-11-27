@@ -1,5 +1,8 @@
 name;icon_path;gathering_rate;cost
-"House";"house.png";{"wood": 42};{"wood":242}
+"House";"house.png";{"wood": 42};{"wood": 242}
+"Timbercraft_Mill";"timbercraft_mill.png";{"wood": 42};{"wood": 42}
+"Coal_Mine";"coal_mine.png";{"coal": 10};{"wood": 10000}
+"Water_Pump";"water_pump_mk_I.png";{"water":42};{"steel":10000}
 "Factory";"factory.png";{"steel": 242};{"wood":4242,"steel":10000}
 "School";"school.png";{"food": 50};{"wood":10042,"steel":20000}
 "Steel_Mill";"steel_mill.png";{"bloom": 100};{"steel":420000}

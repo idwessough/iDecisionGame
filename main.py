@@ -35,8 +35,8 @@ maximum_fps = 60
 developer_option = False
 building_selected = False  # Flag to indicate if a building is selected
 boundary_width = 10
-graphics_levels = ["low", "medium", "high", "ultra", "extra"]
-graphics_level = graphics_levels[0]
+GRAPHICS_LEVELS = ["low", "medium", "high", "ultra", "raw_extra"]
+graphics_level = GRAPHICS_LEVELS[0]
 # Define boundary zones as pygame.Rect objects
 left_boundary = pygame.Rect(0, 0, boundary_width, HEIGHT)
 right_boundary = pygame.Rect(WIDTH - boundary_width, 0, boundary_width, HEIGHT)
@@ -259,6 +259,7 @@ class ResourceManager:
         self.resources = {
             "wood": 200000002,
             "steel": 1000,
+            "coal": 10,
             "gold": 2000000,
             "wood": 200000000,
             "stone": 42000,
@@ -419,7 +420,7 @@ while running:
     
     # Clear screen
     screen.fill((0, 0, 0))
-
+    
     # Draw the scaled map
     scaled_map = pygame.transform.scale(map_image,
                     (int(map_rect.width * zoom_level),

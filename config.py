@@ -14,9 +14,10 @@ MAXIMUM_FPS = 60
 DEVELOPER_OPTION = False
 building_selected = False  # Flag to indicate if a building is selected
 
-GRAPHICS_LEVELS = ["low", "medium", "high", "ultra", "extra"]
+GRAPHICS_LEVELS = ["low", "medium", "high", "ultra", "raw_extra"]
 GRAPHICS_LEVEL = GRAPHICS_LEVELS[0]
 
+IMAGES_QUALITY = [142, 242, 442, 742, "full"]
 # Paths of differents Assets
 ASSETS_PATH = os.path.join("assets") 
 MAPPING_PATH = os.path.join(ASSETS_PATH, "mapping")
