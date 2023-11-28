@@ -9,6 +9,7 @@ def resize_images(input_dir, output_dir, target_width, target_height):
         os.makedirs(output_dir)
 
     for filename in os.listdir(input_dir):
+        filename = "sand.png"
         if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif')):
             # Construct full file path
             input_path = os.path.join(input_dir, filename)
@@ -26,10 +27,13 @@ def resize_images(input_dir, output_dir, target_width, target_height):
 
 ASSETS_PATH = os.path.join("assets")
 BUILDINGS_PATH = os.path.join(ASSETS_PATH, "buildings")
-print(BUILDINGS_PATH)
-input_folder = os.path.join(BUILDINGS_PATH, "input") # Replace with your input folder path
+RESOURCES_PATH = os.path.join(ASSETS_PATH, "resources")
+ICONS_PATH = os.path.join(ASSETS_PATH, "icons")
+
+# input_folder = os.path.join(BUILDINGS_PATH, "input") # Replace with your input folder path
+input_folder = RESOURCES_PATH
 for graphic_level in GRAPHICS_LEVELS:
-    output_folder = os.path.join(BUILDINGS_PATH, graphic_level) # Replace with your output folder path 
+    output_folder = os.path.join(input_folder, graphic_level) # Replace with your output folder path 
     target_width = IMAGES_QUALITY[GRAPHICS_LEVELS.index(graphic_level)]
     target_height = IMAGES_QUALITY[GRAPHICS_LEVELS.index(graphic_level)]
     resize_images(input_folder, output_folder, target_width, target_height)#, target_height

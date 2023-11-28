@@ -29,7 +29,7 @@ RESOURCE_PADDING = 242
 TEXT_HEIGHT = 20
 BUILD_MENU_ROWS = 2  # Number of rows in build menu
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT)) #, pygame.DOUBLEBUF
 clock = pygame.time.Clock()
 maximum_fps = 60
 developer_option = False
@@ -55,7 +55,7 @@ DEPOSITS_PATH = os.path.join(ASSETS_PATH, "deposits")
 
 # Define the color for the shapes (brown with alpha)
 shape_color = (139, 69, 19, 177)  # 128 is the alpha value for semi-transparency
-
+white_color = (255, 255, 255)
 # Create surfaces for the trapezoid and rectangle with per-pixel alpha
 trapezoid_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
 rectangle_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
@@ -104,7 +104,7 @@ def scale_icon(image, type):
 
 
 # Assuming you have loaded the resource icons somewhere in your code
-resource_icons = {
+resources_icons = {
     "water": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "water.png")).convert_alpha(), "resources_inventory"),
     "food": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "food.png")).convert_alpha(), "resources_inventory"),
     "wood": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "wood.png")).convert_alpha(), "resources_inventory"),
@@ -129,6 +129,11 @@ resource_icons = {
 
 LEFT_SIDE_START_X = - 42 
 RIGHT_SIDE_START_X = (WIDTH // 2) + 177 
+resource_rects = {}  # To store rectangles for each resource type
+game_init = False  # To know if all 4 sides corner resources have been displayed one time and their rects has been computed
+
+details_displayed = False
+selected_resource = None
 
 # Define two separate dictionaries for left and right side resources 
 up_left_side_resources = [
@@ -168,15 +173,48 @@ down_right_side_resources = [
 # Define the font for the resource amounts display
 resource_font = pygame.font.SysFont(None, 24)
 
+def display_resource_details(surface, resource_type):
+    global details_displayed, selected_resource
 
-def draw_resources(surface, resources_icon, resources, font, start_x, start_y, location, side, icon_size=42, padding=42, little_padding=17):
+    details_displayed = True
+    selected_resource = resource_type
+    # Assuming you have a way to get resource details like its amount and description
+    resource_amount = resource_manager.get_resource_amount(resource_type)
+    # resource_description = resource_manager.get_resource_description(resource_type)
+
+    # Clear the center of the screen or create a background panel for the details
+    background_details = pygame.Surface((1042, 742), pygame.SRCALPHA)  # Adjust size as needed
+    background_details.fill(shape_color)  # Fill with background color
+    bg_rect = background_details.get_rect(center=(surface.get_width() // 2, surface.get_height() // 2))
+    surface.blit(background_details, bg_rect.topleft)
+
+    # Draw the enlarged resource icon
+    icon = pygame.image.load(os.path.join(RESOURCES_PATH, "high",  f"{resource_type}.png"))  # Adjust size as needed 
+    icon_center = bg_rect.centerx, bg_rect.top + 242
+    icon_rect = icon.get_rect(center = icon_center)
+    surface.blit(icon, icon_rect.topleft)
+
+    # Draw the resource amount and description
+    font = pygame.font.SysFont(None, 24)
+    name_text = font.render(f"Name = {resource_type}", True, white_color)
+    amount_text = font.render(f"Amount: {resource_amount}", True, white_color)
+    # description_text = font.render(resource_description, True, white_color)
+
+    surface.blit(name_text, (icon_center[0], icon_rect.bottom + 17))
+    surface.blit(amount_text, (bg_rect.left + 10, icon_rect.bottom + 42))
+    # surface.blit(description_text, (bg_rect.left + 10, icon_rect.bottom + 40))
+
+    # Update the display
+    pygame.display.update(bg_rect)
+
+def draw_resources(surface, resources_icon, resources, font, start_x, start_y, location, side, icon_size=42, padding=42, little_padding=17, rect_padding=17):
     # Calculate the total width available for each resource
     total_resources = len(resources)
     space_per_resource = ((WIDTH // 2) - (242 + 42))  // total_resources
 
     # Initialize the x-coordinate for resource placement 
-    x = start_x
-    
+    x = start_x 
+    global resource_rects, game_init
     for resource_type in resources:
         # Draw the icon
         icon = resources_icon[resource_type]
@@ -184,10 +222,14 @@ def draw_resources(surface, resources_icon, resources, font, start_x, start_y, l
         surface.blit(icon, (icon_x, start_y))
 
         # Draw the amount text right after the icon
-        text_surf = font.render(f"{resource_manager.get_resource_amount(resource_type)}", True, (255, 255, 255)) 
+        text_surf = font.render(f"{resource_manager.get_resource_amount(resource_type)}", True, white_color) 
         text_x = icon_x + icon_size + padding  # Position the text after the icon with a padding
         text_y = (start_y + icon_size // 2) # (start_y + icon_size + (icon_size - text_surf.get_height())) // 2  # Vertically align the text with the icon 
         surface.blit(text_surf, (text_x, text_y))
+        # Minimize computing to just the first frame
+        if game_init == False:
+            icon_rect = pygame.Rect(icon_x - rect_padding, start_y - rect_padding, icon_size + 2 * rect_padding, icon_size + 2 * rect_padding)
+            resource_rects[resource_type] = icon_rect
 
         # Update x to the next position
         x += space_per_resource + little_padding
@@ -196,6 +238,12 @@ def draw_resources(surface, resources_icon, resources, font, start_x, start_y, l
     if x + icon_size > WIDTH:
         x = WIDTH - icon_size
         
+
+def display_resource_name(surface, font, resource_name, x, y):
+    text_surf = font.render(resource_name, True, white_color)
+    # You can adjust the position as needed, e.g., to not obstruct the cursor
+    surface.blit(text_surf, (x + 10, y + 10))
+
 selected_building = None
 resources = 10000  # Placeholder for player's resources
 
@@ -260,16 +308,25 @@ class Building:
 class ResourceManager:
     def __init__(self):
         self.resources = {
-            "water": 10000, 
-            "food": 10000,
-            "wood": 200000002,
-            "gold": 2000000,
-            "energy": 42424242,
-            "stone": 42000,
-            "concrete": 42,
-            "steel": 1000,
-            "coal": 10,
-            "bloom": 700 
+            "water": 42  , 
+            "food": 10,
+            "wood": 0,
+            "gold": 0,
+            "energy": 0,
+            "stone": 0,
+            "concrete": 0,
+            "heavy_duty_reinforced_concrete": 0,
+            "sand": 0,
+            "glass": 0,
+            "coal": 0,
+            "uranium": 0,
+            "U235_Combustible_fully_enriched": 0,
+            "steel": 0,
+            "stainless_steel_long_product_bloom": 0, 
+            "chromium_bars": 0,
+            "laminated_stainless_steel_alloy": 0,
+            "HSS_Structural_hollow_steel_section": 0,
+            "wirerod": 0 
             # ... add more resources as needed
         }
         self.last_update = time.time() 
@@ -374,7 +431,21 @@ while running:
                     resource_manager.buying(buildings[-1].building_cost)
                     selected_building = None
                     building_selected = False  # Reset the building selected flag
+            
+            if event.button == 1:
+                resource_clicked = False
+                for resource_type, rect in resource_rects.items():
+                    if rect.collidepoint(mouse_position[0], mouse_position[1]): 
+                        #display_resource_details(screen, resource_type) 
+                        details_displayed = True
+                        selected_resource = resource_type
+                        resource_clicked = True
+                        break
+                    if not resource_clicked:
+                        details_displayed = False
+        print(details_displayed)    
 
+        
         # Default Speeds camera movement
         camera_speed = 5
         # Default Speeds of zooming
@@ -424,7 +495,7 @@ while running:
     
     # Clear screen
     screen.fill((0, 0, 0))
-    
+
     # Draw the scaled map
     scaled_map = pygame.transform.scale(map_image,
                     (int(map_rect.width * zoom_level),
@@ -439,15 +510,22 @@ while running:
     screen.blit(rectangle_surface, (0,0))
     
     # Draw upper left side resources
-    draw_resources(screen, resource_icons, up_left_side_resources, resource_font, LEFT_SIDE_START_X, 10, "up", "left") 
+    draw_resources(screen, resources_icons, up_left_side_resources, resource_font, LEFT_SIDE_START_X, 10, "up", "left") 
     # Draw upper right side resources
-    draw_resources(screen, resource_icons, up_right_side_resources, resource_font, RIGHT_SIDE_START_X, 10, "up", "right") 
+    draw_resources(screen, resources_icons, up_right_side_resources, resource_font, RIGHT_SIDE_START_X, 10, "up", "right") 
     # Draw resources in the lower left corner
-    draw_resources(screen, resource_icons, down_left_side_resources, resource_font, LEFT_SIDE_START_X, 1000, "down", "left")
+    draw_resources(screen, resources_icons, down_left_side_resources, resource_font, LEFT_SIDE_START_X, 1000, "down", "left")
     # Draw resources in the lower right corner 
-    draw_resources(screen, resource_icons, down_right_side_resources, resource_font, RIGHT_SIDE_START_X, 1000, "down", "right")
+    draw_resources(screen, resources_icons, down_right_side_resources, resource_font, RIGHT_SIDE_START_X, 1000, "down", "right")
     
+    for resource_type, rect in resource_rects.items():
+        if rect.collidepoint(mouse_position[0], mouse_position[1]):
+            display_resource_name(screen, resource_font, resource_type, mouse_position[0], mouse_position[1]) 
+            break  # Assuming only one resource can be hovered at a time
     
+    rersource_rects = None 
+    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+        continue
     # Draw buildings
     for building in buildings:
         building.draw(screen, map_position, zoom_level) 
@@ -455,9 +533,13 @@ while running:
     # Draw build menu if visible
     if build_menu_visible: 
         draw_build_menu(screen, build_menu_rect, buildings_data["icon_path"], font)
+        
+    if details_displayed:   
+        display_resource_details(screen, selected_resource)
+        
     fps = clock.get_fps()
     # Render FPS
-    fps_text = font.render(f"FPS: {int(fps)}", True, (255, 255, 255))
+    fps_text = font.render(f"FPS: {int(fps)}", True, white_color)
     text_rect = fps_text.get_rect()
     screen.blit(fps_text, (WIDTH - text_rect.width - 10, HEIGHT - text_rect.height - 10))
 
@@ -467,5 +549,6 @@ while running:
     # Update the display
     pygame.display.flip()
 
+    game_init = True
 # Quit Pygame
 pygame.quit()
