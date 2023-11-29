@@ -1,5 +1,5 @@
 import pygame
-import os
+import os, sys
 import ctypes
 import pandas as pd
 import time
@@ -281,6 +281,37 @@ def draw_build_menu(surface, menu_rect, icons, font):
         text_rect = text_surf.get_rect(center=(x + ICON_SIZE // 2, y + ICON_SIZE + TEXT_HEIGHT // 2))
         surface.blit(text_surf, text_rect)
 
+def quit_request():
+    # Display the quit message
+    message_font = pygame.font.SysFont(None, 48)
+    message_text = message_font.render("Would you like to quit now :'(", True, white_color)
+    yes_text = message_font.render("Yes", True, white_color)
+    no_text = message_font.render("No", True, white_color)
+
+    message_rect = message_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+    yes_rect = yes_text.get_rect(center=(WIDTH // 2 - 100, HEIGHT // 2 + 50))
+    no_rect = no_text.get_rect(center=(WIDTH // 2 + 100, HEIGHT // 2 + 50))
+
+    screen.blit(message_text, message_rect)
+    pygame.draw.rect(screen, white_color, yes_rect.inflate(20, 10), 2, border_radius=10)
+    screen.blit(yes_text, yes_rect)
+    pygame.draw.rect(screen, white_color, no_rect.inflate(20, 10), 2, border_radius=10)
+    screen.blit(no_text, no_rect)
+
+    pygame.display.update()
+
+    # Wait for player's response
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if yes_rect.collidepoint(event.pos):
+                    return True
+                elif no_rect.collidepoint(event.pos):
+                    return False
+            elif event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
 # Class for Buildings
 class Building:
     def __init__(self, image_path, building_name, gathering_rate, building_cost, map_pos):
@@ -366,7 +397,13 @@ while running:
 
         if event.type == pygame.QUIT:
             running = False
-    
+
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                # Display the quit confirmation message, close game if needed
+                if quit_request():
+                    running = False
+
         elif event.type == pygame.MOUSEBUTTONDOWN: 
             # Toggle build menu visibility
             if build_icon_rect.collidepoint(event.pos) and not building_selected:
@@ -524,8 +561,6 @@ while running:
             break  # Assuming only one resource can be hovered at a time
     
     rersource_rects = None 
-    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-        continue
     # Draw buildings
     for building in buildings:
         building.draw(screen, map_position, zoom_level) 
