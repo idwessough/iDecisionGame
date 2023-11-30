@@ -43,8 +43,14 @@ right_boundary = pygame.Rect(WIDTH - boundary_width, 0, boundary_width, HEIGHT)
 top_boundary = pygame.Rect(0, 0, WIDTH, boundary_width)
 bottom_boundary = pygame.Rect(0, HEIGHT - boundary_width, WIDTH, boundary_width)
 
+# Function to get the correct asset path (executable environment)
+def absolute_path(relative_path):
+    """ Get the absolute path to the resource, works for devs and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
+
 # Paths of differents Assets
-ASSETS_PATH = os.path.join("assets") 
+ASSETS_PATH = absolute_path(os.path.join("assets")) 
 MAPPING_PATH = os.path.join(ASSETS_PATH, "mapping")
 MENU_PATH = os.path.join(ASSETS_PATH, "home_menu")
 BUILDING_PATH = os.path.join(ASSETS_PATH, "buildings")# , graphics_level
@@ -52,7 +58,8 @@ ICON_PATH = os.path.join(ASSETS_PATH, "icons")
 SCIENCE_PATH = os.path.join(ASSETS_PATH, "science")
 RESOURCES_PATH = os.path.join(ASSETS_PATH, "resources")
 DEPOSITS_PATH = os.path.join(ASSETS_PATH, "deposits")
-
+BUILDINGS_DATA_FILE_PATH = absolute_path(os.path.join("buildings_data.csv") )
+SEPARATOR= ";"
 # Define the color for the shapes (brown with alpha)
 shape_color = (139, 69, 19, 177)  # 128 is the alpha value for semi-transparency
 white_color = (255, 255, 255)
@@ -83,8 +90,7 @@ build_menu_visible = False
 build_menu_rect = pygame.Rect(0, HEIGHT - MENU_HEIGHT, WIDTH, MENU_HEIGHT)
 # Calculate the number of icons per row based on the width of the build menu and the size of the icons plus padding
 icons_per_row = build_menu_rect.width // (ICON_SIZE + ICON_PADDING)
-BUILDINGS_DATA_FILE_PATH = os.path.join("buildings_data.csv") 
-SEPARATOR= ";"
+
 # Paths for the differents building types images
 df_buildings = pd.read_csv(BUILDINGS_DATA_FILE_PATH, sep=SEPARATOR)
 buildings_data = df_buildings

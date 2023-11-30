@@ -133,6 +133,12 @@ def set_windowed():
     global screen
     print("Setting Windowed")
     screen = pygame.display.set_mode((SCREEN_WIDTH - (0.2 * SCREEN_WIDTH), SCREEN_HEIGHT - (0.2 * SCREEN_HEIGHT)), pygame.RESIZABLE)
+
+# Function to get the correct asset path (executable environment)
+def absolute_path(relative_path):
+    """ Get the absolute path to the resource, works for devs and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
     
 # Function to handle the settings screen
 def settings_screen():
@@ -141,7 +147,7 @@ def settings_screen():
     windowed_button = Button('Windowed Mode', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2), 5, action=set_windowed) 
     fullscreen_button = Button('Full Screen', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 50), 5, action=set_fullscreen)
     # Background of the Settings 
-    background_settings = pygame.image.load(os.path.join("assets", "settings_menu", "Settings_Menu_Background_Game_Image.png") )
+    background_settings = pygame.image.load(absolute_path(os.path.join("assets", "settings_menu", "Settings_Menu_Background_Game_Image.png") ))
     background_settings = pygame.transform.scale(background_settings, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
@@ -179,7 +185,7 @@ def main_menu():
     settings_button = Button('Settings', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 50), 5)
     source_button = Button('Source Code', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 100), 5)
     exit_button = Button('Exit', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 150), 5)
-    background_image = pygame.image.load(os.path.join("assets", "home_menu", "Main_Menu_Background_Game_Image.png") )
+    background_image = pygame.image.load(absolute_path(os.path.join("assets", "home_menu", "Main_Menu_Background_Game_Image.png") ))
     background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
     
     
