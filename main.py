@@ -31,7 +31,7 @@ BUILD_MENU_ROWS = 2  # Number of rows in build menu
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT)) #, pygame.DOUBLEBUF
 clock = pygame.time.Clock()
-maximum_fps = 60
+maximum_fps = 120
 developer_option = False
 building_selected = False  # Flag to indicate if a building is selected
 boundary_width = 10
@@ -103,7 +103,7 @@ def scale_icon(image, type):
     return scaled_icon
 
 
-# Assuming you have loaded the resource icons somewhere in your code
+# Resource icons 
 resources_icons = {
     "water": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "water.png")).convert_alpha(), "resources_inventory"),
     "food": scale_icon(pygame.image.load(os.path.join(RESOURCES_PATH, "food.png")).convert_alpha(), "resources_inventory"),
@@ -178,18 +178,18 @@ def display_resource_details(surface, resource_type):
 
     details_displayed = True
     selected_resource = resource_type
-    # Assuming you have a way to get resource details like its amount and description
+    # I have a way to get resource details like its amount, description's comming
     resource_amount = resource_manager.get_resource_amount(resource_type)
     # resource_description = resource_manager.get_resource_description(resource_type)
 
     # Clear the center of the screen or create a background panel for the details
-    background_details = pygame.Surface((1042, 742), pygame.SRCALPHA)  # Adjust size as needed
+    background_details = pygame.Surface((1042, 742), pygame.SRCALPHA)  # Transparent background
     background_details.fill(shape_color)  # Fill with background color
     bg_rect = background_details.get_rect(center=(surface.get_width() // 2, surface.get_height() // 2))
     surface.blit(background_details, bg_rect.topleft)
 
     # Draw the enlarged resource icon
-    icon = pygame.image.load(os.path.join(RESOURCES_PATH, "high",  f"{resource_type}.png"))  # Adjust size as needed 
+    icon = pygame.image.load(os.path.join(RESOURCES_PATH, "high",  f"{resource_type}.png"))  # Adjusting size as needed 
     icon_center = bg_rect.centerx, bg_rect.top + 242
     icon_rect = icon.get_rect(center = icon_center)
     surface.blit(icon, icon_rect.topleft)
@@ -366,19 +366,20 @@ class ResourceManager:
         if current_time - self.last_update >= TIME_INTERVAL:
             # Update resources
             self.last_update = current_time 
-            # Rest of your update logic
+            # Rest of the update logic
             for building in buildings:
-                print(eval(building.gathering_rate)) 
+                # Scrape into each resources types gathering rate
                 for resource, rate in eval(building.gathering_rate).items():
+                    # Adding inventory
                     self.resources[resource] += rate
 
     def buying(self, cost):
-        print(cost)
+        # Substract resources types amounts of transaction costs
         for resource_type, cost_amount in eval(cost).items():
             self.resources[resource_type] -= cost_amount
 
     def get_resource_amount(self, resource):
-        return self.resources.get(resource, 0)
+        return self.resources.get(resource)# , 0
 
 
 # List to store buildings
@@ -479,8 +480,7 @@ while running:
                         resource_clicked = True
                         break
                     if not resource_clicked:
-                        details_displayed = False
-        print(details_displayed)    
+                        details_displayed = False 
 
         
         # Default Speeds camera movement
@@ -578,8 +578,8 @@ while running:
     text_rect = fps_text.get_rect()
     screen.blit(fps_text, (WIDTH - text_rect.width - 10, HEIGHT - text_rect.height - 10))
 
-    clock.tick(120)
-    #print()
+    # Maximum frames per second rate
+    clock.tick(maximum_fps) 
     
     # Update the display
     pygame.display.flip()

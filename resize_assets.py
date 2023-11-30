@@ -8,8 +8,7 @@ def resize_images(input_dir, output_dir, target_width, target_height):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    for filename in os.listdir(input_dir):
-        filename = "sand.png"
+    for filename in os.listdir(input_dir): 
         if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif')):
             # Construct full file path
             input_path = os.path.join(input_dir, filename)

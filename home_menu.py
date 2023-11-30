@@ -146,7 +146,7 @@ def settings_screen():
 
 
     while running:
-        print(screen)
+        
         screen.blit(background_settings, (0, 0))
 
         # Draw buttons
@@ -185,7 +185,7 @@ def main_menu():
     
     while True:
         # Draw the background image
-        print(screen)
+        
         screen.blit(background_image, (0, 0)) 
         exit_button = Button('Exit', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 150), 5, action=quit_game)
 
