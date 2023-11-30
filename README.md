@@ -3,11 +3,23 @@ iDecision: Resource Harvest is my brand new Real Time Strategy (RTS) game develo
  
  Enjoy the beautiful assets designed and created for this occasion!
 
+<details open>
+<summary>Summary</summary>
+
+* ## [Features & InGame footages Introduction](#features)
+* ## [Quick Start (How To Launch & Play) ](#quickstart)
+
+</details>
+<br>
+
+
 Software tools : Python (PyGame, Pandas),
 Assets tools : Photoshop, Gimp, DALLE (AI), Unreal Engine & Unity (just screenshots my assets from topview)
 
 #### Disclaimer: 
-This game is in development stage for now. Lots of features are comming soon and here is what is currently available (see images below) : 
+This game is in development stage for now. Lots of features are comming soon and here is what is currently available (images below) : 
+
+## Features & InGame footages : <a id="features"></a>
 
 ![](ingame_footages/home_menu.png)
     *****1) Home Menu*****
@@ -36,7 +48,7 @@ What's coming ([**Learn more about iDecision project here: board roadmap**](http
 - Campaign, Objectives to finish the game like building a MERVEILLE, gather certains amount of specific resource type, discover technologies
 - Project managment board gives you insights about advancement of those features [in "Project" tab or click here](https://github.com/users/idwessough/projects/2)
 
-## Quick Start (How To Launch & Play):
+## Quick Start (How To Launch & Play): <a id="quickstart"></a>
 #### Option A: Easy way (Windows only, without any requirements):
 1) Click "Code" ![Click "Code"](ingame_footages/1_instructions.png) 
 2) Then Click "Download ZIP" ![Then Click "Download ZIP"](ingame_footages/2_instructions.png)
