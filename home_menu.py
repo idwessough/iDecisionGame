@@ -2,13 +2,29 @@ import pygame
 import sys
 import os
 import webbrowser
+import screeninfo
+
+# Retrieve all screens connected to the system
+monitors = screeninfo.get_monitors()
+
+# Check if there is more than one screen
+if len(monitors) > 1:
+    print("Multiple screens detected. Using resolution of Screen 1")
+
+# Loop through each screen and print its width and height
+for i, monitor in enumerate(monitors):
+    first_screen = True
+    if first_screen:
+        SCREEN_WIDTH = monitor.width
+        SCREEN_HEIGHT = monitor.height
+    print(f"Screen {i+1}: Width = {monitor.width}, Height = {monitor.height}")
+    first_screen = False
 
 # Initialize Pygame
 pygame.init()
 
 # Constants for screen dimensions
-SCREEN_WIDTH = 1920
-SCREEN_HEIGHT = 1080
+
 
 # Set up the display
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -32,44 +48,6 @@ def draw_text(text, font, color, surface, x, y):
     textrect = textobj.get_rect()
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
-
-# Define your resources
-class Inventory:
-    def __init__(self):
-        self.food = 0
-        self.wood = 0
-        self.iron = 0
-        self.gold = 0
-
-    def add_resource(self, resource, amount):
-        if resource == 'food':
-            self.food += amount
-        elif resource == 'wood':
-            self.wood += amount
-        elif resource == 'iron':
-            self.iron += amount
-        elif resource == 'gold':
-            self.gold += amount
-
-    # ... Add more methods as needed for resource management
-
-# Define a collector building
-class CollectorBuilding:
-    def __init__(self, resource_type, gathering_rate):
-        self.resource_type = resource_type
-        self.gathering_rate = gathering_rate
-        self.timer = 0
-
-    def update(self, delta_time, inventory):
-        # Add resources to the inventory based on the gathering rate
-        self.timer += delta_time
-        if self.timer >= self.gathering_rate:
-            inventory.add_resource(self.resource_type, 1)
-            self.timer = 0  # Reset the timer
-
-# ... Add more game logic, classes and methods as needed
-
-
 
 
 class Button:
@@ -132,7 +110,10 @@ class Button:
 def quit_game():
     pygame.quit()
     sys.exit()
-    
+
+def start_game():
+    import main  # Import main.py here to start the game
+
 # Define the action for the source code button
 def open_link():
     webbrowser.open('http://github.com/idwessough/iDecisionGame') #Resource Harvest
@@ -151,7 +132,13 @@ def set_fullscreen():
 def set_windowed():
     global screen
     print("Setting Windowed")
-    screen = pygame.display.set_mode((SCREEN_WIDTH - (0.1 * SCREEN_WIDTH), SCREEN_HEIGHT - (0.1 * SCREEN_HEIGHT)))
+    screen = pygame.display.set_mode((SCREEN_WIDTH - (0.2 * SCREEN_WIDTH), SCREEN_HEIGHT - (0.2 * SCREEN_HEIGHT)), pygame.RESIZABLE)
+
+# Function to get the correct asset path (executable environment)
+def absolute_path(relative_path):
+    """ Get the absolute path to the resource, works for devs and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
     
 # Function to handle the settings screen
 def settings_screen():
@@ -160,12 +147,12 @@ def settings_screen():
     windowed_button = Button('Windowed Mode', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2), 5, action=set_windowed) 
     fullscreen_button = Button('Full Screen', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 50), 5, action=set_fullscreen)
     # Background of the Settings 
-    background_settings = pygame.image.load(os.path.join("assets", "settings_menu", "Settings_Menu_Background_Game_Image.png") )
+    background_settings = pygame.image.load(absolute_path(os.path.join("assets", "settings_menu", "Settings_Menu_Background_Game_Image.png") ))
     background_settings = pygame.transform.scale(background_settings, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
     while running:
-        print(screen)
+        
         screen.blit(background_settings, (0, 0))
 
         # Draw buttons
@@ -193,19 +180,18 @@ def settings_screen():
 
 # Main menu loop
 def main_menu():
-    play_button = Button('Play Game', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2), 5)
+    # play_button = Button('Play Game', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2), 5)
+    play_button = Button('Play Game', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2), 5, action=start_game)  # Assign start_game function to the Play Game button
     settings_button = Button('Settings', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 50), 5)
     source_button = Button('Source Code', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 100), 5)
     exit_button = Button('Exit', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 150), 5)
-    background_image = pygame.image.load(os.path.join("assets", "home_menu", "Main_Menu_Background_Game_Image.png") )
+    background_image = pygame.image.load(absolute_path(os.path.join("assets", "home_menu", "Main_Menu_Background_Game_Image.png") ))
     background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
     
-    inventory = Inventory()
-    wood_collector = CollectorBuilding('wood', 5)  # Gather wood every 5 seconds
     
     while True:
         # Draw the background image
-        print(screen)
+        
         screen.blit(background_image, (0, 0)) 
         exit_button = Button('Exit', 200, 40, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 150), 5, action=quit_game)
 
@@ -224,11 +210,7 @@ def main_menu():
         # Draw buttons
         for button in [play_button, settings_button, source_button, exit_button]:
             button.draw()
-                    
-        # In your game loop, update the collector
-        delta_time = 1  # This would actually be the time since the last update
-        wood_collector.update(delta_time, inventory)
-        print(inventory.wood)
+            
         # Update the display
         pygame.display.update()
 

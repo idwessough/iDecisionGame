@@ -1,0 +1,60 @@
+name;icon_path;gathering_rate;cost
+"House";"house.png";{"wood": 42};{"wood": 242}
+"Timbercraft_Mill";"timbercraft_mill.png";{"wood": 42};{"wood": 42}
+"Coal_Mine";"coal_mine.png";{"coal": 10};{"wood": 10000} 
+"Water_Pump_Mk_I";"water_pump_mk_I.png";{"water":42, "energy": -10};{"steel":10000}
+"Water_Pump_Mk_II";"water_pump_mk_II.png";{"water":4200, "energy": -500};{"steel":1000000}
+"Water_Pump_Mk_III";"water_pump_mk_III.png";{"water":42000, "energy": -1000};{"steel":100000000}
+"Water_Pump_MK_IV";"water_pump_mk_IV.png";{"water":420000, "energy": -50000};{"steel":1000000000}
+"Wind_Turbine";"wind_turbine.png";{"energy":10};{"stainless_steel_long_product_bloom":1000, "wirerod": 10000}
+"Turbines_Park";"wind_turbines.png";{"energy":1000};{"stainless_steel_long_product_bloom":100000, "wirerod": 1000000}
+"HydroQuebec";"hydroelectric_plant.png";{"energy":20000};{"stone":10000, "concrete":2000, "heavy_duty_reinforced_concrete":1000, "stainless_steel_long_product_bloom": 5000}
+"Glass_Factory";"glass_factory.png";{"glass": 242, "energy": -1000, "coal": -50, "sand": -1000};{"wood":4242,"steel":10000}
+"Glass_Factory_Mk_II";"glass_factory_mk_II.png";{"glass": 4242, "energy": -10000, "coal": -1000, "sand": -10000};{"wood":100000,"steel":10000}
+"factory";"factory.png";{"steel": 10000, "energy": 1000};{"wood": 10000}
+"Steel_Mill";"steel_mill.png";{"stainless_steel_long_product_bloom": 100, "wirerod":10, "steel": -1000, "energy": -10000};{"steel":420000}
+"Nuclear 900MWe";"nuclear_power_plant_single_reactor.png";{"energy": 900000, "U235_Combustible_fully_enriched": -1000};{"stainless_steel_long_product_bloom":100000, "heavy_duty_reinforced_concrete":100000, "wirerod":4242, "water":4242}
+"Nuclear 1500MWe";"nuclear_power_plant_double_reactor.png";{"energy": 1500000, "U235_Combustible_fully_enriched": -2500};{"stainless_steel_long_product_bloom":200000, "heavy_duty_reinforced_concrete":100000, "wirerod":4242, "water":4242}
+"School";"school.png";{"food": 50};{"wood":10042,"steel":20000}
+"Town_Hall";"town_hall.png";{"water": 4242};{"food":4242,"steel":10000,"stainless_steel_long_product_bloom":42,"water":42}
+"1";"future_feature.png";{};{} 
+"2";"future_feature.png";{};{}
+"3";"future_feature.png";{};{}
+"4";"future_feature.png";{};{}
+"5";"future_feature.png";{};{}
+"6";"future_feature.png";{};{}
+"7";"future_feature.png";{};{}
+"8";"future_feature.png";{};{}
+"9";"future_feature.png";{};{}
+"10";"future_feature.png";{};{}
+"11";"future_feature.png";{};{}
+"12";"future_feature.png";{};{}
+"13";"future_feature.png";{};{}
+"14";"future_feature.png";{};{}
+"15";"future_feature.png";{};{}
+"16";"future_feature.png";{};{}
+"17";"future_feature.png";{};{}
+"18";"future_feature.png";{};{}
+"19";"future_feature.png";{};{}
+"21";"future_feature.png";{};{}
+"22";"future_feature.png";{};{}
+"23";"future_feature.png";{};{}
+"24";"future_feature.png";{};{}
+"25";"future_feature.png";{};{}
+"26";"future_feature.png";{};{}
+"27";"future_feature.png";{};{}
+"28";"future_feature.png";{};{}
+"29";"future_feature.png";{};{}
+"30";"future_feature.png";{};{}
+"31";"future_feature.png";{};{}
+"32";"future_feature.png";{};{}
+"33";"future_feature.png";{};{}
+"34";"future_feature.png";{};{}
+"35";"future_feature.png";{};{}
+"36";"future_feature.png";{};{}
+"37";"future_feature.png";{};{}
+"38";"future_feature.png";{};{}
+"39";"future_feature.png";{};{}
+"40";"future_feature.png";{};{}
+"41";"future_feature.png";{};{}
+"42";"future_feature.png";{};{}
