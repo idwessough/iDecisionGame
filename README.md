@@ -41,6 +41,10 @@ This game is in development stage for now. Lots of features are comming soon and
 ![](ingame_footages/screenshot_resources_pannel_detail_U235.png)
     *****5) Resources details***** panel will show insights about specific resource when a player clicks on a resource icon (in development)
     <br>
+
+![](ingame_footages/screenshot_player_quitting_request.png/)
+Hiting escape to quit game.
+
 What's coming ([**Learn more about iDecision project here: board roadmap**](https://github.com/users/idwessough/projects/2)): 
 - Weather control (day/night shifts, snow effects)
 - Create sounds
